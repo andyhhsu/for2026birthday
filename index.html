@@ -37,18 +37,20 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
+        /* 圖片外框不裁切，維持真實比例 */
         .adaptive-photo-box {
             position: relative;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, rgba(9,10,15,0.95) 100%);
+            background: radial-gradient(circle at center, rgba(255,255,255,0.04) 0%, rgba(9,10,15,0.95) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 240px;
-            max-height: 520px;
+            min-height: 260px;
+            max-height: 560px;
             overflow: hidden;
+            padding: 12px;
         }
         .adaptive-photo-box img {
-            max-height: 500px;
+            max-height: 520px;
             width: auto;
             max-width: 100%;
             object-fit: contain;
@@ -60,8 +62,8 @@
             transform: scale(1.02);
         }
         @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 25px rgba(250, 17, 79, 0.3), 0 0 50px rgba(0, 245, 234, 0.2); }
-            50% { box-shadow: 0 0 40px rgba(250, 17, 79, 0.6), 0 0 80px rgba(0, 245, 234, 0.4); }
+            0%, 100% { box-shadow: 0 0 25px rgba(250, 17, 79, 0.3), 0 0 50px rgba(255, 215, 0, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(250, 17, 79, 0.6), 0 0 80px rgba(255, 215, 0, 0.4); }
         }
         .ring-glow {
             animation: pulse-glow 3s infinite ease-in-out;
@@ -91,27 +93,27 @@
     <header class="fixed top-0 left-0 right-0 z-40 glass-card border-b border-white/10 px-4 py-3">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- 玫瑰金多層光環 (去劇透化設計) -->
+                <!-- 玫瑰金星光多層記憶光環 (防劇透設計) -->
                 <div class="relative w-11 h-11 flex items-center justify-center">
                     <svg class="w-11 h-11" viewBox="0 0 100 100">
                         <circle cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-opacity="0.2" />
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#00F5EA" stroke-width="8" stroke-opacity="0.2" />
-                        <circle cx="50" cy="50" r="20" fill="none" stroke="#FFD700" stroke-width="8" stroke-opacity="0.2" />
+                        <circle cx="50" cy="50" r="31" fill="none" stroke="#FFD700" stroke-width="8" stroke-opacity="0.2" />
+                        <circle cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-opacity="0.2" />
                         <circle id="nav-ring-1" class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" />
-                        <circle id="nav-ring-2" class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="195" />
-                        <circle id="nav-ring-3" class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" />
+                        <circle id="nav-ring-2" class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="195" />
+                        <circle id="nav-ring-3" class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" />
                     </svg>
                 </div>
                 <div>
                     <div class="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">2025-2026 Memory Rings</div>
                     <div class="text-xs sm:text-sm font-bold flex items-center gap-1">
                         <span>記憶拼圖：</span>
-                        <span id="progress-text" class="text-[#00F5EA] font-mono text-sm sm:text-base">0%</span>
+                        <span id="progress-text" class="text-[#FFD700] font-mono text-sm sm:text-base">0%</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 右側：僅保留音樂開關 -->
+            <!-- 右側：背景音樂開關 (無多餘干擾) -->
             <div class="flex items-center gap-2">
                 <button id="bgm-btn" onclick="toggleBGM()" title="背景音樂開關" class="w-8 h-8 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center text-xs text-zinc-400 hover:text-white transition cursor-pointer">
                     🔇
@@ -122,7 +124,6 @@
 
     <main class="max-w-xl mx-auto px-4 pt-24">
 
-        <!-- 開場歡迎卡片 -->
         <section id="welcome-section" class="glass-card rounded-3xl p-7 text-center my-4 border border-white/15 shadow-2xl">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FA114F]/15 border border-[#FA114F]/30 text-[#FA114F] text-xs font-semibold mb-4">
                 <span>✨ SPECIAL EDITION FOR CHRISTINE</span>
@@ -132,7 +133,7 @@
             </h1>
             <p class="text-zinc-300 text-sm leading-relaxed mb-6">
                 過去這一年，我們一起飛越了好多城市、破解了無數密室，也走過許多平凡卻閃亮的日常。<br><br>
-                我把這一年最珍貴的 <span class="text-[#00F5EA] font-bold">65 個瞬間</span>，收進了這本回憶錄裡。每當妳看完一個篇章並解開專屬的記憶問答，頂部的時光光環就會更完整！
+                我把這一年最珍貴的 <span class="text-[#FFD700] font-bold">65 個瞬間</span>，收進了這本回憶錄裡。每當妳看完一個篇章並解開專屬的記憶問答，頂部的時光光環就會更完整！
             </p>
             <div class="bg-zinc-900/80 rounded-2xl p-4 mb-6 text-left border border-white/5 text-xs text-zinc-400 space-y-2">
                 <div class="flex items-center gap-2"><span class="text-[#FA114F] font-bold">● 飛行日記 (29張)</span>｜日本富士山、韓國婚禮與馬祖之旅</div>
@@ -144,14 +145,11 @@
             </button>
         </section>
 
-        <!-- 章節快速切換列 -->
         <nav id="chapter-tabs" class="hidden grid grid-cols-3 gap-2 mb-6">
         </nav>
 
-        <!-- 章節內容動態渲染區 -->
         <div id="chapter-container" class="hidden space-y-8"></div>
 
-        <!-- 最終章：100% 圓環合攏 & 神秘驚喜登場 -->
         <section id="finale-section" class="hidden glass-card rounded-3xl p-7 text-center my-6 border border-[#FFD700]/40 shadow-2xl">
             <div class="text-xs font-bold tracking-widest uppercase text-[#FFD700] mb-2">MEMORIES FULLY UNLOCKED • 100%</div>
             <h2 class="text-2xl font-black mb-2">2025-2026 回憶光環<br>完美合攏！</h2>
@@ -160,8 +158,8 @@
             <div class="relative w-44 h-44 mx-auto mb-8 rounded-full flex items-center justify-center ring-glow bg-black/50 p-4">
                 <svg class="w-full h-full" viewBox="0 0 100 100">
                     <circle class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" />
-                    <circle class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="0" />
-                    <circle class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="0" />
+                    <circle class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="0" />
+                    <circle class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="0" />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                     <span class="text-2xl font-black text-white">100%</span>
@@ -181,7 +179,6 @@
                 </p>
             </div>
 
-            <!-- 長按 3 秒解鎖互動器 -->
             <div id="final-action-box" class="py-4 px-3 rounded-2xl bg-zinc-900/80 border border-white/10">
                 <p id="sensor-status" class="text-xs text-[#00F5EA] font-bold mb-4 tracking-wide">
                     👇 請將手指「長按」下方禮物 3 秒，將我們一整年的心意與回憶存放在一起
@@ -212,7 +209,6 @@
                 </p>
             </div>
 
-            <!-- 最終浪漫畫面（已移除「回憶同步完成 永遠熱戀」） -->
             <div id="option-a-reveal" class="hidden mt-6 p-6 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border-2 border-[#FA114F] space-y-5">
                 <div class="w-14 h-14 rounded-full bg-[#FA114F]/20 text-[#FA114F] flex items-center justify-center mx-auto text-2xl animate-heartbeat">
                     🎁
@@ -233,7 +229,6 @@
                 </div>
             </div>
 
-            <!-- 重置進度按鈕 -->
             <div class="mt-8 pt-4 border-t border-white/5 text-center">
                 <button onclick="resetAllProgress()" class="text-[11px] text-zinc-600 hover:text-zinc-400 underline cursor-pointer">
                     🔄 重新體驗 / 重置所有闖關進度
@@ -243,7 +238,6 @@
 
     </main>
 
-    <!-- 右下角浮動快速導覽按鈕 -->
     <div id="floating-nav" class="fixed bottom-5 right-4 z-30 hidden flex flex-col gap-2">
         <button onclick="scrollToQuiz()" class="px-3.5 py-2.5 rounded-full glass-card border border-white/20 text-xs font-bold text-white shadow-xl flex items-center gap-1.5 active:scale-95 transition cursor-pointer">
             <span>🔐</span>
@@ -254,7 +248,6 @@
         </button>
     </div>
 
-    <!-- Lightbox Modal -->
     <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
         <div class="absolute top-4 left-4 right-4 flex items-center justify-between max-w-xl mx-auto">
             <span id="lightbox-counter" class="px-3 py-1 rounded-full bg-white/10 text-xs font-mono text-zinc-300"></span>
@@ -280,9 +273,8 @@
 
     <script>
         const PHOTO_BASE_URL = "https://andyhhsu.github.io/for2026birthday/";
-        const STORAGE_KEY = "christine_2026_rings_state_v3";
+        const STORAGE_KEY = "christine_2026_rings_state_v4";
 
-        // 3 大篇章資料 (飛行日記 29張 / 解謎夥伴 10張 / 日常點滴 26張 = 共65張)
         const chaptersData = [
             {
                 id: 1,
@@ -337,7 +329,7 @@
                 shortTitle: "解謎夥伴",
                 title: "Chapter 2｜解謎夥伴",
                 subtitle: "那些一起破關（或求救）的密室逃脫與劇本殺（共 10 張）",
-                ringColor: "#00F5EA",
+                ringColor: "#FFD700",
                 photoRange: [30, 39],
                 quiz: {
                     question: "回想一下，我們第一次「兩天一夜」的密室逃脫行程，是去哪裡呢？",
@@ -365,7 +357,7 @@
                 shortTitle: "日常點滴",
                 title: "Chapter 3｜日常點滴",
                 subtitle: "演唱會、看展散步與美食（共 26 張）",
-                ringColor: "#FFD700",
+                ringColor: "#00F5EA",
                 photoRange: [40, 65],
                 quiz: {
                     question: "最後一題！在這一年裡，我們總共一起收集了幾張珍貴的回憶照片呢？",
@@ -448,12 +440,12 @@
                     bgmLoop.start(0);
                     isBgmPlaying = true;
                     btn.textContent = "🎵";
-                    btn.classList.add("border-[#00F5EA]", "text-white");
+                    btn.classList.add("border-[#FFD700]", "text-white");
                 } else {
                     if (bgmLoop) bgmLoop.stop();
                     isBgmPlaying = false;
                     btn.textContent = "🔇";
-                    btn.classList.remove("border-[#00F5EA]", "text-white");
+                    btn.classList.remove("border-[#FFD700]", "text-white");
                 }
             } catch (e) {}
         }
@@ -577,7 +569,7 @@
                         isActive 
                             ? 'bg-white text-black border-white shadow-lg' 
                             : isDone 
-                                ? 'bg-zinc-900/90 text-zinc-200 border-[#00F5EA]/50' 
+                                ? 'bg-zinc-900/90 text-zinc-200 border-[#FFD700]/50' 
                                 : 'bg-zinc-900/40 text-zinc-500 border-white/5'
                     }">
                         <span class="text-base">${isDone ? '✅' : ch.icon}</span>
@@ -761,7 +753,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 長按解鎖互動
         let holdInterval = null;
         let holdProgress = 0;
 
@@ -827,7 +818,6 @@
             document.getElementById('option-a-reveal').classList.remove('hidden');
         }
 
-        // Lightbox
         let currentLightboxNum = 1;
         let touchStartX = 0;
 
