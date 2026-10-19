@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025-2026 我們的時光圓環｜Christine 生日快樂</title>
+    <title>2025-2026 我們的時光光環｜Christine 生日快樂</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ring-red: #FA114F;
-            --ring-green: #A4FF00;
-            --ring-blue: #00F5EA;
+            --ring-gold: #FFD700;
+            --ring-rose: #FA114F;
+            --ring-cyan: #00F5EA;
         }
         body {
             font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -19,91 +20,109 @@
             color: #F5F5F7;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         .serif-title {
             font-family: 'Playfair Display', 'Noto Sans TC', serif;
         }
-        /* Apple Watch 圓環進度動畫 */
         .ring-circle {
             transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
             stroke-linecap: round;
         }
-        /* 玻璃擬態卡片 */
         .glass-card {
             background: rgba(28, 28, 30, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        /* 拍立得微傾效果 */
-        .polaroid-item {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .adaptive-photo-box {
+            position: relative;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, rgba(9,10,15,0.95) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 240px;
+            max-height: 520px;
+            overflow: hidden;
         }
-        .polaroid-item:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 12px 24px -6px rgba(250, 17, 79, 0.25);
+        .adaptive-photo-box img {
+            max-height: 500px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
-        /* 心跳呼吸燈動畫 */
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            15% { transform: scale(1.25); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
-        }
-        .animate-heartbeat {
-            animation: heartbeat 1.6s infinite;
+        .adaptive-photo-box:hover img {
+            transform: scale(1.02);
         }
         @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 25px rgba(250, 17, 79, 0.3), 0 0 50px rgba(164, 255, 0, 0.2); }
+            0%, 100% { box-shadow: 0 0 25px rgba(250, 17, 79, 0.3), 0 0 50px rgba(0, 245, 234, 0.2); }
             50% { box-shadow: 0 0 40px rgba(250, 17, 79, 0.6), 0 0 80px rgba(0, 245, 234, 0.4); }
         }
         .ring-glow {
             animation: pulse-glow 3s infinite ease-in-out;
         }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        .handwriting {
+            font-family: 'Caveat', cursive;
+        }
+        @keyframes ripple {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1.65); opacity: 0; }
+        }
+        .sensor-ripple {
+            animation: ripple 1.5s infinite ease-out;
+        }
     </style>
 </head>
-<body class="min-h-screen pb-24 selection:bg-[#FA114F] selection:text-white">
+<body class="min-h-screen pb-28 selection:bg-[#FA114F] selection:text-white">
 
-    <!-- 頂部固定導覽列：Apple Watch 圓環進度條 -->
     <header class="fixed top-0 left-0 right-0 z-40 glass-card border-b border-white/10 px-4 py-3">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- 迷你三色圓環 SVG -->
+                <!-- 玫瑰金多層光環 (去劇透化設計) -->
                 <div class="relative w-11 h-11 flex items-center justify-center">
                     <svg class="w-11 h-11" viewBox="0 0 100 100">
-                        <!-- 背景底環 -->
                         <circle cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-opacity="0.2" />
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#A4FF00" stroke-width="8" stroke-opacity="0.2" />
-                        <circle cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-opacity="0.2" />
-                        <!-- 動態進度環 -->
-                        <circle id="nav-ring-red" class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" />
-                        <circle id="nav-ring-green" class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#A4FF00" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="195" />
-                        <circle id="nav-ring-blue" class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" />
+                        <circle cx="50" cy="50" r="31" fill="none" stroke="#00F5EA" stroke-width="8" stroke-opacity="0.2" />
+                        <circle cx="50" cy="50" r="20" fill="none" stroke="#FFD700" stroke-width="8" stroke-opacity="0.2" />
+                        <circle id="nav-ring-1" class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" />
+                        <circle id="nav-ring-2" class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="195" />
+                        <circle id="nav-ring-3" class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" />
                     </svg>
                 </div>
                 <div>
-                    <div class="text-xs text-zinc-400 font-medium tracking-wider uppercase">2025-2026 Memory Rings</div>
-                    <div class="text-sm font-bold flex items-center gap-1.5">
-                        <span>回憶圓環進度：</span>
-                        <span id="progress-text" class="text-[#A4FF00] font-mono text-base">0%</span>
+                    <div class="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">2025-2026 Memory Rings</div>
+                    <div class="text-xs sm:text-sm font-bold flex items-center gap-1">
+                        <span>記憶拼圖：</span>
+                        <span id="progress-text" class="text-[#00F5EA] font-mono text-sm sm:text-base">0%</span>
                     </div>
                 </div>
             </div>
-            <!-- 模擬心率顯示 -->
-            <div class="flex items-center gap-1.5 bg-zinc-900/90 px-3 py-1.5 rounded-full border border-white/10">
-                <span class="text-[#FA114F] animate-heartbeat text-sm">❤️</span>
-                <span id="bpm-text" class="font-mono text-xs font-bold text-zinc-200">98 BPM</span>
+
+            <!-- 右側：僅保留音樂開關 -->
+            <div class="flex items-center gap-2">
+                <button id="bgm-btn" onclick="toggleBGM()" title="背景音樂開關" class="w-8 h-8 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center text-xs text-zinc-400 hover:text-white transition cursor-pointer">
+                    🔇
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- 主內容區 -->
     <main class="max-w-xl mx-auto px-4 pt-24">
 
-        <!-- 開場歡迎卡片 (預設顯示) -->
+        <!-- 開場歡迎卡片 -->
         <section id="welcome-section" class="glass-card rounded-3xl p-7 text-center my-4 border border-white/15 shadow-2xl">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FA114F]/15 border border-[#FA114F]/30 text-[#FA114F] text-xs font-semibold mb-4">
                 <span>✨ SPECIAL EDITION FOR CHRISTINE</span>
@@ -112,69 +131,91 @@
                 親愛的 Christine<br>生日快樂！
             </h1>
             <p class="text-zinc-300 text-sm leading-relaxed mb-6">
-                過去這一年，我們一起跨越了國界、破解了無數密室、在演唱會聲嘶力竭，也走過許多平凡卻閃亮的日常。<br><br>
-                我把這一年最珍貴的 <span class="text-[#00F5EA] font-bold">65 個瞬間</span>，收進了這座「時光圓環」裡。每當妳讀完一個篇章，頂部的圓環就會注滿能量。
+                過去這一年，我們一起飛越了好多城市、破解了無數密室，也走過許多平凡卻閃亮的日常。<br><br>
+                我把這一年最珍貴的 <span class="text-[#00F5EA] font-bold">65 個瞬間</span>，收進了這本回憶錄裡。每當妳看完一個篇章並解開專屬的記憶問答，頂部的時光光環就會更完整！
             </p>
             <div class="bg-zinc-900/80 rounded-2xl p-4 mb-6 text-left border border-white/5 text-xs text-zinc-400 space-y-2">
-                <div class="flex items-center gap-2"><span class="text-[#FA114F] font-bold">● 活動圓環 (29張)</span>｜富士山之旅與韓國朋友婚禮</div>
-                <div class="flex items-center gap-2"><span class="text-[#A4FF00] font-bold">● 鍛鍊圓環 (10張)</span>｜密室逃脫與劇本殺的腦力激盪</div>
-                <div class="flex items-center gap-2"><span class="text-[#00F5EA] font-bold">● 相伴圓環 (26張)</span>｜日常點滴與演唱會點滴</div>
+                <div class="flex items-center gap-2"><span class="text-[#FA114F] font-bold">● 飛行日記 (29張)</span>｜日本富士山、韓國婚禮與馬祖之旅</div>
+                <div class="flex items-center gap-2"><span class="text-[#00F5EA] font-bold">● 解謎夥伴 (10張)</span>｜密室逃脫與劇本殺的腦力激盪</div>
+                <div class="flex items-center gap-2"><span class="text-[#FFD700] font-bold">● 日常點滴 (26張)</span>｜演唱會、看展與閃閃發光的每個日常</div>
             </div>
             <button onclick="startJourney()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FA114F] to-[#FF5E3A] text-white font-bold text-base shadow-lg shadow-[#FA114F]/30 active:scale-98 transition transform cursor-pointer">
                 開始回顧我們的 2025 - 2026 ➔
             </button>
         </section>
 
-        <!-- 章節快速切換列 (進入旅程後顯示) -->
+        <!-- 章節快速切換列 -->
         <nav id="chapter-tabs" class="hidden grid grid-cols-3 gap-2 mb-6">
-            <!-- 由 JS 動態生成 3 個篇章按鈕 -->
         </nav>
 
         <!-- 章節內容動態渲染區 -->
         <div id="chapter-container" class="hidden space-y-8"></div>
 
-        <!-- 最終章：100% 圓環合攏 & Apple Watch 登場 (預設隱藏) -->
-        <section id="finale-section" class="hidden glass-card rounded-3xl p-7 text-center my-6 border border-[#A4FF00]/40 shadow-2xl">
-            <div class="text-xs font-bold tracking-widest uppercase text-[#A4FF00] mb-2">GOAL ACHIEVED • 100% COMPLETED</div>
-            <h2 class="text-2xl font-black mb-2">2025-2026 回憶圓環<br>完美合攏！</h2>
-            <p class="text-xs text-zinc-400 mb-6">65 張照片 • 3 大篇章 • 無數個心動的瞬間</p>
+        <!-- 最終章：100% 圓環合攏 & 神秘驚喜登場 -->
+        <section id="finale-section" class="hidden glass-card rounded-3xl p-7 text-center my-6 border border-[#FFD700]/40 shadow-2xl">
+            <div class="text-xs font-bold tracking-widest uppercase text-[#FFD700] mb-2">MEMORIES FULLY UNLOCKED • 100%</div>
+            <h2 class="text-2xl font-black mb-2">2025-2026 回憶光環<br>完美合攏！</h2>
+            <p class="text-xs text-zinc-400 mb-6">65 張照片 • 3 大篇章 • 無數個閃閃發光的瞬間</p>
 
-            <!-- 大型發光三色圓環展示 -->
-            <div class="relative w-48 h-48 mx-auto mb-8 rounded-full flex items-center justify-center ring-glow bg-black/50 p-4">
+            <div class="relative w-44 h-44 mx-auto mb-8 rounded-full flex items-center justify-center ring-glow bg-black/50 p-4">
                 <svg class="w-full h-full" viewBox="0 0 100 100">
                     <circle class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" />
-                    <circle class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#A4FF00" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="0" />
-                    <circle class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="0" />
+                    <circle class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="0" />
+                    <circle class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="0" />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                     <span class="text-2xl font-black text-white">100%</span>
-                    <span class="text-[10px] text-zinc-400 tracking-widest">UNLOCKED</span>
+                    <span class="text-[10px] text-zinc-400 tracking-widest">COMPLETE</span>
                 </div>
             </div>
 
             <div class="space-y-4 text-sm text-zinc-200 leading-relaxed mb-8 bg-zinc-900/70 p-5 rounded-2xl border border-white/10">
                 <p>
                     謝謝妳，在過去這一年裡，<br>
-                    陪我走過這麼多地方、解開這麼多謎題。
+                    陪我走過這麼多地方、創造這麼多美好回憶。
                 </p>
                 <p>
                     過去的每一秒，我們已經用照片好好珍藏；<br>
-                    而**未來的每一秒、每一次心跳、每一趟旅程**，<br>
-                    我想用另一種方式，繼續陪伴並守護著妳。
+                    而<span class="text-white font-bold">未來的每一刻、每一次心動、每一趟旅程</span>，<br>
+                    我想繼續陪伴並守護著妳。
                 </p>
             </div>
 
-            <!-- 揭曉最終指令按鈕 -->
-            <div id="final-action-box">
-                <button onclick="triggerOptionA()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#00F5EA] via-[#A4FF00] to-[#FA114F] text-black font-black text-base shadow-xl active:scale-95 transition transform cursor-pointer">
-                    🎁 點擊開啟妳的專屬禮物儀式
-                </button>
+            <!-- 長按 3 秒解鎖互動器 -->
+            <div id="final-action-box" class="py-4 px-3 rounded-2xl bg-zinc-900/80 border border-white/10">
+                <p id="sensor-status" class="text-xs text-[#00F5EA] font-bold mb-4 tracking-wide">
+                    👇 請將手指「長按」下方禮物 3 秒，將我們一整年的心意與回憶存放在一起
+                </p>
+
+                <div class="relative w-28 h-28 mx-auto flex items-center justify-center select-none">
+                    <div id="sensor-ripple-el" class="absolute inset-2 rounded-full border-2 border-[#FA114F]/50 sensor-ripple pointer-events-none"></div>
+                    <svg class="w-28 h-28 absolute inset-0 -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6" />
+                        <circle id="hold-progress-ring" cx="50" cy="50" r="44" fill="none" stroke="#FA114F" stroke-width="6" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5" />
+                    </svg>
+                    <button id="heart-sensor-btn"
+                            onmousedown="startHeartScan(event)"
+                            onmouseup="cancelHeartScan(event)"
+                            onmouseleave="cancelHeartScan(event)"
+                            ontouchstart="startHeartScan(event)"
+                            ontouchend="cancelHeartScan(event)"
+                            ontouchcancel="cancelHeartScan(event)"
+                            oncontextmenu="event.preventDefault()"
+                            class="relative z-10 w-20 h-20 rounded-full bg-gradient-to-b from-[#FA114F] to-[#99082E] text-white flex flex-col items-center justify-center shadow-lg shadow-[#FA114F]/40 active:scale-95 transition transform cursor-pointer select-none">
+                        <span class="text-2xl leading-none mb-0.5">🎁</span>
+                        <span class="text-[11px] font-mono font-bold tracking-tighter">HOLD</span>
+                    </button>
+                </div>
+
+                <p class="text-[11px] text-zinc-500 mt-3">
+                    （長按期間請保持專注喔！）
+                </p>
             </div>
 
-            <!-- 選項 A：閉眼伸手版 最終浪漫畫面 (點擊後顯示) -->
+            <!-- 最終浪漫畫面（已移除「回憶同步完成 永遠熱戀」） -->
             <div id="option-a-reveal" class="hidden mt-6 p-6 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border-2 border-[#FA114F] space-y-5">
                 <div class="w-14 h-14 rounded-full bg-[#FA114F]/20 text-[#FA114F] flex items-center justify-center mx-auto text-2xl animate-heartbeat">
-                    ⌚
+                    🎁
                 </div>
                 <h3 class="text-xl font-black text-white leading-snug">
                     現在，請閉上眼睛，<br>
@@ -183,40 +224,81 @@
                 <p class="text-xs text-zinc-400">
                     （請保持閉眼，準備好後張開眼睛喔！）
                 </p>
-                <div class="pt-4 border-t border-white/10 flex flex-col items-center">
-                    <p class="text-xs text-zinc-500 mb-2">Happy Birthday, My Dearest Christine.</p>
-                    <img src="https://andyhhsu.github.io/for2025birthday/signature.png" alt="Signature" class="max-w-[160px] opacity-90 invert" onerror="this.style.display='none'">
+                <div class="pt-5 border-t border-white/10 flex flex-col items-center">
+                    <p class="text-xs text-zinc-500 mb-1">Happy Birthday, My Dearest Christine.</p>
+                    <div class="handwriting text-white/90 select-none mt-1 flex flex-col items-center">
+                        <span class="text-4xl tracking-wide transform -rotate-3">Andy</span>
+                        <span class="text-lg text-zinc-300 tracking-widest -mt-1 ml-12 transform -rotate-2">2026.11.10</span>
+                    </div>
                 </div>
+            </div>
+
+            <!-- 重置進度按鈕 -->
+            <div class="mt-8 pt-4 border-t border-white/5 text-center">
+                <button onclick="resetAllProgress()" class="text-[11px] text-zinc-600 hover:text-zinc-400 underline cursor-pointer">
+                    🔄 重新體驗 / 重置所有闖關進度
+                </button>
             </div>
         </section>
 
     </main>
 
-    <!-- 點擊照片放大檢視 Lightbox Modal -->
+    <!-- 右下角浮動快速導覽按鈕 -->
+    <div id="floating-nav" class="fixed bottom-5 right-4 z-30 hidden flex flex-col gap-2">
+        <button onclick="scrollToQuiz()" class="px-3.5 py-2.5 rounded-full glass-card border border-white/20 text-xs font-bold text-white shadow-xl flex items-center gap-1.5 active:scale-95 transition cursor-pointer">
+            <span>🔐</span>
+            <span>直達本章問答</span>
+        </button>
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="self-end w-10 h-10 rounded-full glass-card border border-white/15 text-xs font-bold text-zinc-300 shadow-xl flex items-center justify-center active:scale-95 transition cursor-pointer" title="回到頂部">
+            ↑
+        </button>
+    </div>
+
+    <!-- Lightbox Modal -->
     <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
-        <button class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 text-white text-xl flex items-center justify-center">&times;</button>
-        <img id="lightbox-img" src="" alt="放大照片" class="max-h-[78vh] max-w-full rounded-xl shadow-2xl border border-white/15 object-contain mb-4" onclick="event.stopPropagation()">
-        <p id="lightbox-caption" class="text-sm text-zinc-200 text-center max-w-md px-4 font-medium"></p>
+        <div class="absolute top-4 left-4 right-4 flex items-center justify-between max-w-xl mx-auto">
+            <span id="lightbox-counter" class="px-3 py-1 rounded-full bg-white/10 text-xs font-mono text-zinc-300"></span>
+            <button onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl flex items-center justify-center cursor-pointer">&times;</button>
+        </div>
+
+        <div class="relative w-full max-w-2xl flex items-center justify-center my-2" onclick="event.stopPropagation()"
+             ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
+            <button onclick="navigateLightbox(-1)" class="absolute left-1 sm:left-2 z-10 w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 active:scale-90 transition cursor-pointer">
+                &#10094;
+            </button>
+            <img id="lightbox-img" src="" alt="放大照片" class="max-h-[72vh] max-w-full rounded-xl shadow-2xl border border-white/15 object-contain select-none">
+            <button onclick="navigateLightbox(1)" class="absolute right-1 sm:right-2 z-10 w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 active:scale-90 transition cursor-pointer">
+                &#10095;
+            </button>
+        </div>
+
+        <div class="max-w-md text-center px-4 mt-2" onclick="event.stopPropagation()">
+            <p id="lightbox-caption" class="text-sm text-zinc-100 leading-relaxed font-medium mb-1"></p>
+            <p class="text-[11px] text-zinc-500">💡 可點擊左右箭頭或手指左右滑動切換照片</p>
+        </div>
     </div>
 
     <script>
-        // ============================================================================
-        // 🛠️ 【照片路徑與 3 大篇章設定區（總計 65 張照片）】
-        // ============================================================================
-        
         const PHOTO_BASE_URL = "https://andyhhsu.github.io/for2026birthday/";
+        const STORAGE_KEY = "christine_2026_rings_state_v3";
 
-        // 3 大篇章資料：Chapter 1 (29張: p1~p29), Chapter 2 (10張: p30~p39), Chapter 3 (26張: p40~p65)
+        // 3 大篇章資料 (飛行日記 29張 / 解謎夥伴 10張 / 日常點滴 26張 = 共65張)
         const chaptersData = [
             {
                 id: 1,
                 icon: "✈️",
-                shortTitle: "跨國時區",
-                title: "Chapter 1｜跨越國界的時區",
-                subtitle: "富士山下的悸動 × 韓國婚禮的見證（共 29 張）",
+                shortTitle: "飛行日記",
+                title: "Chapter 1｜飛行日記",
+                subtitle: "富士山下的悸動 × 韓國婚禮 × 馬祖之旅（共 29 張）",
                 ringColor: "#FA114F",
-                bpm: 118,
                 photoRange: [1, 29],
+                quiz: {
+                    question: "在這個章節中，我們一起去了哪些國家／地區呢？（提示：共 3 個地方，請直接輸入名稱）",
+                    placeholder: "例如：日本 韓國 馬祖",
+                    type: "multi",
+                    requiredKeywords: ["日本", "韓國", "馬祖"],
+                    hint: "提示：有看富士山的、參加婚禮的，還有看藍眼淚的離島喔！（共3個）"
+                },
                 notes: {
                     1: "為了一睹富士山的真面目，我們早起吹風，但看到本尊露臉的那一刻，一切都值得了！",
                     2: "富士山的背景太美，不小心拍了太多張洗版。",
@@ -246,22 +328,28 @@
                     26: "（第26張旅遊回憶）",
                     27: "（第27張旅遊回憶）",
                     28: "（第28張旅遊回憶）",
-                    29: "跨國時區篇的最後一刻，記憶永遠鮮明。"
+                    29: "飛行日記篇的最後一刻，記憶永遠鮮明。"
                 }
             },
             {
                 id: 2,
                 icon: "🕵️‍♀️",
-                shortTitle: "燒腦倒數",
-                title: "Chapter 2｜燒腦的倒數計時",
+                shortTitle: "解謎夥伴",
+                title: "Chapter 2｜解謎夥伴",
                 subtitle: "那些一起破關（或求救）的密室逃脫與劇本殺（共 10 張）",
-                ringColor: "#A4FF00",
-                bpm: 132,
+                ringColor: "#00F5EA",
                 photoRange: [30, 39],
+                quiz: {
+                    question: "回想一下，我們第一次「兩天一夜」的密室逃脫行程，是去哪裡呢？",
+                    placeholder: "請輸入城市名稱...",
+                    type: "single",
+                    acceptedAnswers: ["台中", "臺中", "台中市", "臺中市"],
+                    hint: "提示：台灣中部、太陽餅很有名的地方！"
+                },
                 notes: {
                     30: "每次進密室前都信誓旦旦說不求救，結果時間過一半就開始狂按對講機XD",
                     31: "看妳認真盤邏輯、找兇手的表情，真的比劇本本身還要精彩！",
-                    32: "這場劇本殺我們超快就推理出來，簡訊神隊友無誤。",
+                    32: "這場劇本殺我們超快就推理出來，簡直神隊友無誤。",
                     33: "密室裡的道具做得超逼真，我們兩個還被嚇了一跳。",
                     34: "苦思解謎中的認真側臉。",
                     35: "拿到線索的那一刻，眼神發光！",
@@ -274,18 +362,24 @@
             {
                 id: 3,
                 icon: "☕",
-                shortTitle: "日常與藝文",
-                title: "Chapter 3｜日常點滴與搖滾藝文",
-                subtitle: "演唱會的聲嘶力竭 × 展覽日常與美食（共 26 張）",
-                ringColor: "#00F5EA",
-                bpm: 125,
+                shortTitle: "日常點滴",
+                title: "Chapter 3｜日常點滴",
+                subtitle: "演唱會、看展散步與美食（共 26 張）",
+                ringColor: "#FFD700",
                 photoRange: [40, 65],
+                quiz: {
+                    question: "最後一題！在這一年裡，我們總共一起收集了幾張珍貴的回憶照片呢？",
+                    placeholder: "請輸入數字...",
+                    type: "single",
+                    acceptedAnswers: ["65", "65張", "六十五", "六十五張"],
+                    hint: "提示：看看最後一張照片編號是多少！"
+                },
                 notes: {
-                    40: "燈光暗下來、前奏響起的那一秒，我們的心跳大概都飆到 150 了吧！",
+                    40: "燈光暗下來、前奏響起的那一秒，氣氛直接嗨到最高點！",
                     41: "演唱會現場超嗨，嗓子直接喊到明天見。",
                     42: "動靜皆宜的我們，除了在演唱會嗨翻，也能安安靜靜一起逛展覽。",
                     43: "手裡拿著爆米花跟票根，跟妳看過的每一場電影，都是最棒的約會。",
-                    44: "這一年我們到底吃了多少好料？難怪需要運動手錶來督促！",
+                    44: "這一年我們到底吃了多少好料？幸福肥就是這樣來的！",
                     45: "手機相簿裡有一半都是這種奇奇怪怪的怪表情合輯哈哈。",
                     46: "日常散步的小確幸。",
                     47: "發現神仙咖啡廳，心情跟著晴朗起來。",
@@ -306,24 +400,73 @@
                     62: "相機記錄下我們最自然的互動。",
                     63: "有妳在身邊，哪裡都是晴天。",
                     64: "倒數第二張照片，代表我們的故事越發精采。",
-                    65: "第 65 張照片，我們的 2025-2026 回憶圓環，完美圓滿！"
+                    65: "第 65 張照片，我們的 2025-2026 回憶光環，完美圓滿！"
                 }
             }
         ];
 
-        // 音效設定 (使用 Tone.js 產生清脆的 Apple Watch 風格提示音)
-        let synth;
-        function playRingSound(type) {
+        let synth, bgmSynth, bgmLoop;
+        let isBgmPlaying = false;
+        const melodyNotes = [
+            { note: "C5", dur: "8n" }, { note: "C5", dur: "8n" }, { note: "D5", dur: "4n" }, { note: "C5", dur: "4n" }, { note: "F5", dur: "4n" }, { note: "E5", dur: "2n" },
+            { note: "C5", dur: "8n" }, { note: "C5", dur: "8n" }, { note: "D5", dur: "4n" }, { note: "C5", dur: "4n" }, { note: "G5", dur: "4n" }, { note: "F5", dur: "2n" }
+        ];
+        let melodyIdx = 0;
+
+        function initAudio() {
+            if (Tone.context.state !== 'running') Tone.start();
+            if (!synth) {
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.8 }
+                }).toDestination();
+                synth.volume.value = -6;
+            }
+        }
+
+        function toggleBGM() {
             try {
-                if (Tone.context.state !== 'running') Tone.start();
-                if (!synth) {
-                    synth = new Tone.PolySynth(Tone.Synth, {
-                        oscillator: { type: "sine" },
-                        envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.8 }
-                    }).toDestination();
+                initAudio();
+                const btn = document.getElementById('bgm-btn');
+                if (!isBgmPlaying) {
+                    if (!bgmSynth) {
+                        bgmSynth = new Tone.PolySynth(Tone.Synth, {
+                            oscillator: { type: "triangle" },
+                            envelope: { attack: 0.02, decay: 0.5, sustain: 0.1, release: 1.5 }
+                        }).toDestination();
+                        bgmSynth.volume.value = -14;
+                    }
+                    if (!bgmLoop) {
+                        bgmLoop = new Tone.Loop((time) => {
+                            const item = melodyNotes[melodyIdx % melodyNotes.length];
+                            bgmSynth.triggerAttackRelease(item.note, item.dur, time);
+                            melodyIdx++;
+                        }, "4n");
+                    }
+                    Tone.Transport.bpm.value = 100;
+                    Tone.Transport.start();
+                    bgmLoop.start(0);
+                    isBgmPlaying = true;
+                    btn.textContent = "🎵";
+                    btn.classList.add("border-[#00F5EA]", "text-white");
+                } else {
+                    if (bgmLoop) bgmLoop.stop();
+                    isBgmPlaying = false;
+                    btn.textContent = "🔇";
+                    btn.classList.remove("border-[#00F5EA]", "text-white");
                 }
+            } catch (e) {}
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
                 if (type === 'step') {
                     synth.triggerAttackRelease(["E5", "A5"], "16n");
+                } else if (type === 'error') {
+                    synth.triggerAttackRelease(["C3", "F#3"], "8n");
+                } else if (type === 'heartbeat') {
+                    synth.triggerAttackRelease("C2", "32n");
                 } else if (type === 'complete') {
                     const now = Tone.now();
                     synth.triggerAttackRelease("C5", "8n", now);
@@ -331,48 +474,110 @@
                     synth.triggerAttackRelease("G5", "8n", now + 0.24);
                     synth.triggerAttackRelease("C6", "4n", now + 0.36);
                 }
+            } catch (e) {}
+        }
+
+        let currentChapterIndex = 0;
+        let unlockedChapters = new Set();
+        let isGiftRevealed = false;
+
+        function saveProgress() {
+            try {
+                const data = {
+                    currentChapterIndex,
+                    unlocked: Array.from(unlockedChapters),
+                    isGiftRevealed
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function loadSavedProgress() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return false;
+                const data = JSON.parse(raw);
+                if (Array.isArray(data.unlocked)) {
+                    unlockedChapters = new Set(data.unlocked);
+                }
+                currentChapterIndex = typeof data.currentChapterIndex === 'number' ? data.currentChapterIndex : 0;
+                isGiftRevealed = !!data.isGiftRevealed;
+                return unlockedChapters.size > 0 || currentChapterIndex > 0;
             } catch (e) {
-                // 忽略瀏覽器未互動前的音效限制
+                return false;
             }
         }
 
-        // 狀態管理
-        let currentChapterIndex = 0;
-        let unlockedChapters = new Set();
-
-        // 產生圖片網址與智慧預設圖 (Fallback)
-        function getPhotoUrl(num) {
-            return `${PHOTO_BASE_URL}p${num}.jpg`;
+        function resetAllProgress() {
+            localStorage.removeItem(STORAGE_KEY);
+            unlockedChapters.clear();
+            currentChapterIndex = 0;
+            isGiftRevealed = false;
+            updateRingsProgress();
+            document.getElementById('finale-section').classList.add('hidden');
+            document.getElementById('option-a-reveal').classList.add('hidden');
+            document.getElementById('final-action-box').classList.remove('hidden');
+            document.getElementById('chapter-tabs').classList.add('hidden');
+            document.getElementById('chapter-container').classList.add('hidden');
+            document.getElementById('floating-nav').classList.add('hidden');
+            document.getElementById('welcome-section').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        function getPlaceholderUrl(num, chapterTitle) {
-            const colors = ["1e1b4b/f43f5e", "064e3b/a3e635", "0f172a/38bdf8", "3b0764/f472b6"];
-            const colorPair = colors[(num % 4)];
+
+        const EXTENSIONS = ['.jpg', '.JPG', '.JPEG', '.webp', '.png'];
+
+        function getPhotoUrl(num, extIndex = 0) {
+            return `${PHOTO_BASE_URL}p${num}${EXTENSIONS[extIndex]}`;
+        }
+
+        function getPlaceholderUrl(num) {
+            const colors = ["1e1b4b/f43f5e", "064e3b/a3e635", "0f172a/38bdf8"];
+            const colorPair = colors[(num % 3)];
             const text = encodeURIComponent(`Photo #${num}`);
             return `https://placehold.co/600x750/${colorPair}?text=${text}`;
         }
 
-        // 開始旅程
+        function handleImgError(imgEl, num) {
+            let extIdx = parseInt(imgEl.dataset.extIdx || "0", 10) + 1;
+            if (extIdx < EXTENSIONS.length) {
+                imgEl.dataset.extIdx = extIdx;
+                imgEl.src = getPhotoUrl(num, extIdx);
+            } else {
+                imgEl.onerror = null;
+                imgEl.src = getPlaceholderUrl(num);
+            }
+        }
+
+        function getNoteByPhotoNum(num) {
+            for (const ch of chaptersData) {
+                if (num >= ch.photoRange[0] && num <= ch.photoRange[1]) {
+                    return ch.notes[num] || `我們的珍貴瞬間 #${num}`;
+                }
+            }
+            return `我們的珍貴瞬間 #${num}`;
+        }
+
         function startJourney() {
-            playRingSound('step');
+            playSound('step');
+            if (!isBgmPlaying) toggleBGM();
             document.getElementById('welcome-section').classList.add('hidden');
             document.getElementById('chapter-tabs').classList.remove('hidden');
             document.getElementById('chapter-container').classList.remove('hidden');
             renderTabs();
-            loadChapter(0);
+            loadChapter(currentChapterIndex);
         }
 
-        // 渲染上方 3 個章節頁籤
         function renderTabs() {
             const tabsEl = document.getElementById('chapter-tabs');
             tabsEl.innerHTML = chaptersData.map((ch, idx) => {
-                const isActive = idx === currentChapterIndex;
+                const isActive = idx === currentChapterIndex && document.getElementById('finale-section').classList.contains('hidden');
                 const isDone = unlockedChapters.has(idx);
                 return `
                     <button onclick="loadChapter(${idx})" class="py-2.5 px-2 rounded-2xl text-xs font-bold transition flex flex-col items-center gap-1 border cursor-pointer ${
                         isActive 
                             ? 'bg-white text-black border-white shadow-lg' 
                             : isDone 
-                                ? 'bg-zinc-900/90 text-zinc-200 border-[#A4FF00]/50' 
+                                ? 'bg-zinc-900/90 text-zinc-200 border-[#00F5EA]/50' 
                                 : 'bg-zinc-900/40 text-zinc-500 border-white/5'
                     }">
                         <span class="text-base">${isDone ? '✅' : ch.icon}</span>
@@ -382,48 +587,48 @@
             }).join('');
         }
 
-        // 更新頂部 Apple Watch 三色圓環進度
         function updateRingsProgress() {
             const completedCount = unlockedChapters.size;
             const percent = Math.min(100, Math.round((completedCount / chaptersData.length) * 100));
             
             document.getElementById('progress-text').textContent = `${percent}%`;
 
-            // 計算圓環 stroke-dashoffset
-            const redMax = 264, greenMax = 195, blueMax = 126;
-            document.getElementById('nav-ring-red').style.strokeDashoffset = redMax - (redMax * percent / 100);
-            document.getElementById('nav-ring-green').style.strokeDashoffset = greenMax - (greenMax * percent / 100);
-            document.getElementById('nav-ring-blue').style.strokeDashoffset = blueMax - (blueMax * percent / 100);
+            const max1 = 264, max2 = 195, max3 = 126;
+            document.getElementById('nav-ring-1').style.strokeDashoffset = max1 - (max1 * percent / 100);
+            document.getElementById('nav-ring-2').style.strokeDashoffset = max2 - (max2 * percent / 100);
+            document.getElementById('nav-ring-3').style.strokeDashoffset = max3 - (max3 * percent / 100);
         }
 
-        // 載入指定章節
         function loadChapter(index) {
             currentChapterIndex = index;
+            saveProgress();
             const ch = chaptersData[index];
+            const isAlreadyUnlocked = unlockedChapters.has(index);
+
             document.getElementById('finale-section').classList.add('hidden');
             document.getElementById('chapter-container').classList.remove('hidden');
-            document.getElementById('bpm-text').textContent = `${ch.bpm} BPM`;
+            document.getElementById('floating-nav').classList.remove('hidden');
 
             renderTabs();
 
-            // 產生該章節所有照片的卡片牆（每張都附帶專屬吐槽文字）
             let galleryItemsHTML = '';
             for (let num = ch.photoRange[0]; num <= ch.photoRange[1]; num++) {
-                const imgUrl = getPhotoUrl(num);
-                const fallbackUrl = getPlaceholderUrl(num, ch.shortTitle);
+                const imgUrl = getPhotoUrl(num, 0);
                 const noteText = ch.notes[num] || `我們的珍貴瞬間 #${num}`;
                 
                 galleryItemsHTML += `
-                    <div class="glass-card rounded-3xl overflow-hidden border border-white/10 shadow-xl mb-4">
-                        <div class="relative aspect-[4/3] w-full bg-zinc-900 overflow-hidden cursor-pointer" onclick="openLightbox('${imgUrl}', '${fallbackUrl}', '回憶編號 #p${num}｜${noteText}')">
-                            <img src="${imgUrl}" alt="Photo ${num}" loading="lazy"
-                                 onerror="this.onerror=null; this.src='${fallbackUrl}';"
-                                 class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                            <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white border border-white/15">
+                    <div class="glass-card rounded-3xl overflow-hidden border border-white/10 shadow-xl mb-5">
+                        <div class="adaptive-photo-box p-2 sm:p-3 cursor-pointer" onclick="openLightboxByNum(${num})">
+                            <img id="gallery-img-${num}" src="${imgUrl}" alt="Photo ${num}" loading="lazy" data-ext-idx="0"
+                                 onerror="handleImgError(this, ${num})">
+                            <div class="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white border border-white/15">
                                 #p${num}
                             </div>
+                            <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] text-zinc-300 border border-white/10">
+                                🔍 點擊放大
+                            </div>
                         </div>
-                        <div class="p-4">
+                        <div class="p-4 border-t border-white/5 bg-zinc-900/40">
                             <p class="text-zinc-100 text-sm leading-relaxed font-medium">
                                 “${noteText}”
                             </p>
@@ -434,13 +639,16 @@
 
             const isLastChapter = index === chaptersData.length - 1;
             const nextBtnText = isLastChapter 
-                ? "✨ 完成本章，合攏 100% 圓環！" 
-                : `完成本章，前往 Chapter ${index + 2} ➔`;
+                ? "✨ 驗證答案，合攏 100% 光環！" 
+                : `🔓 驗證答案，解鎖 Chapter ${index + 2} ➔`;
 
             const container = document.getElementById('chapter-container');
             container.innerHTML = `
                 <div class="glass-card rounded-3xl p-6 border-l-4" style="border-left-color: ${ch.ringColor}">
-                    <div class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1">${ch.icon} MEMORY CHAPTER 0${ch.id}</div>
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">${ch.icon} MEMORY CHAPTER 0${ch.id}</span>
+                        ${unlockedChapters.size === chaptersData.length ? `<button onclick="showFinale()" class="text-xs font-bold text-[#FFD700] underline cursor-pointer">直達最終驚喜 ➔</button>` : ''}
+                    </div>
                     <h2 class="text-2xl font-black text-white mb-1">${ch.title}</h2>
                     <p class="text-xs text-zinc-300">${ch.subtitle}</p>
                 </div>
@@ -450,13 +658,26 @@
                         <h3 class="text-sm font-bold text-zinc-300 flex items-center gap-1.5">
                             <span>🎞️</span> 本章完整回憶相簿 (${ch.photoRange[1] - ch.photoRange[0] + 1}張)
                         </h3>
-                        <span class="text-xs text-zinc-500">點擊照片可放大檢視</span>
+                        <span class="text-xs text-zinc-400">點照片可全螢幕滑動連看</span>
                     </div>
                     ${galleryItemsHTML}
                 </div>
 
-                <div class="pt-4">
-                    <button onclick="completeChapter(${index})" class="w-full py-4 rounded-2xl bg-white text-black font-black text-base shadow-xl hover:bg-zinc-200 active:scale-98 transition transform cursor-pointer">
+                <div id="quiz-card" class="glass-card rounded-3xl p-6 border border-white/15 shadow-2xl space-y-4">
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style="color: ${ch.ringColor}">
+                        <span>🔐 CHAPTER 0${ch.id} 回憶解鎖問答</span>
+                    </div>
+                    <p class="text-white font-bold text-base leading-relaxed">
+                        Q：${ch.quiz.question}
+                    </p>
+                    <div>
+                        <input id="quiz-input" type="text" placeholder="${ch.quiz.placeholder}" 
+                               value="${isAlreadyUnlocked ? '✅ 已成功解鎖本章' : ''}"
+                               onkeydown="if(event.key==='Enter') verifyChapterQuiz(${index})"
+                               class="w-full px-4 py-3.5 rounded-2xl bg-zinc-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-white transition">
+                        <p id="quiz-feedback" class="text-xs mt-2 hidden"></p>
+                    </div>
+                    <button onclick="verifyChapterQuiz(${index})" class="w-full py-4 rounded-2xl bg-white text-black font-black text-base shadow-xl hover:bg-zinc-200 active:scale-98 transition transform cursor-pointer">
                         ${nextBtnText}
                     </button>
                 </div>
@@ -465,54 +686,225 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 完成章節並推進圓環
-        function completeChapter(index) {
+        function scrollToQuiz() {
+            const quizEl = document.getElementById('quiz-card');
+            if (quizEl) {
+                quizEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function verifyChapterQuiz(index) {
+            const ch = chaptersData[index];
+            const inputEl = document.getElementById('quiz-input');
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const quizCardEl = document.getElementById('quiz-card');
+            const rawInput = (inputEl.value || "").trim();
+
+            if (unlockedChapters.has(index) && rawInput.includes('已成功解鎖')) {
+                proceedNext(index);
+                return;
+            }
+
+            let isCorrect = false;
+            const normalized = rawInput.replace(/臺/g, '台').toLowerCase();
+
+            if (ch.quiz.type === 'multi') {
+                isCorrect = ch.quiz.requiredKeywords.every(kw => normalized.includes(kw));
+            } else {
+                isCorrect = ch.quiz.acceptedAnswers.some(ans => 
+                    normalized === ans.replace(/臺/g, '台').toLowerCase() || 
+                    normalized.includes(ans.replace(/臺/g, '台').toLowerCase())
+                );
+            }
+
+            if (isCorrect) {
+                feedbackEl.classList.remove('hidden', 'text-[#FA114F]');
+                feedbackEl.classList.add('text-[#00F5EA]');
+                feedbackEl.textContent = "🎉 答對了！光環能量解鎖中...";
+                setTimeout(() => proceedNext(index), 450);
+            } else {
+                playSound('error');
+                quizCardEl.classList.remove('animate-shake');
+                void quizCardEl.offsetWidth;
+                quizCardEl.classList.add('animate-shake');
+                feedbackEl.classList.remove('hidden', 'text-[#00F5EA]');
+                feedbackEl.classList.add('text-[#FA114F]');
+                feedbackEl.textContent = `❌ 答案還差一點點喔！${ch.quiz.hint}`;
+            }
+        }
+
+        function proceedNext(index) {
             unlockedChapters.add(index);
+            saveProgress();
             updateRingsProgress();
             renderTabs();
 
             if (unlockedChapters.size === chaptersData.length) {
                 showFinale();
             } else {
-                playRingSound('step');
+                playSound('step');
                 loadChapter(index + 1);
             }
         }
 
-        // 顯示最終 100% 合攏畫面
         function showFinale() {
-            playRingSound('complete');
+            playSound('complete');
             document.getElementById('chapter-container').classList.add('hidden');
+            document.getElementById('floating-nav').classList.add('hidden');
             document.getElementById('finale-section').classList.remove('hidden');
-            document.getElementById('bpm-text').textContent = "168 BPM";
+            renderTabs();
+
+            if (isGiftRevealed) {
+                document.getElementById('final-action-box').classList.add('hidden');
+                document.getElementById('option-a-reveal').classList.remove('hidden');
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 觸發選項 A：閉眼伸手領取 Apple Watch 12
-        function triggerOptionA() {
-            playRingSound('complete');
+        // 長按解鎖互動
+        let holdInterval = null;
+        let holdProgress = 0;
+
+        function startHeartScan(e) {
+            if (e && e.cancelable) e.preventDefault();
+            if (holdInterval || isGiftRevealed) return;
+
+            initAudio();
+            const ringEl = document.getElementById('hold-progress-ring');
+            const statusEl = document.getElementById('sensor-status');
+            const circumference = 276.5;
+
+            statusEl.textContent = "🎁 正在將我們一整年的心意與回憶存放在一起... 請保持按住！";
+            statusEl.className = "text-xs text-[#00F5EA] font-bold mb-4 tracking-wide animate-pulse";
+
+            let tickCount = 0;
+            holdInterval = setInterval(() => {
+                holdProgress += 2;
+                tickCount++;
+
+                const offset = circumference - (circumference * Math.min(100, holdProgress) / 100);
+                ringEl.style.strokeDashoffset = offset;
+
+                if (tickCount % 5 === 0) {
+                    playSound('heartbeat');
+                }
+
+                if (holdProgress >= 100) {
+                    clearInterval(holdInterval);
+                    holdInterval = null;
+                    completeHeartScan();
+                }
+            }, 60);
+        }
+
+        function cancelHeartScan(e) {
+            if (!holdInterval || isGiftRevealed) return;
+            clearInterval(holdInterval);
+            holdInterval = null;
+            holdProgress = 0;
+
+            document.getElementById('hold-progress-ring').style.strokeDashoffset = 276.5;
+            const statusEl = document.getElementById('sensor-status');
+            statusEl.textContent = "⚠️ 過程不小心放開了，請重新「長按」禮物 3 秒喔！";
+            statusEl.className = "text-xs text-[#FA114F] font-bold mb-4 tracking-wide";
+        }
+
+        function completeHeartScan() {
+            isGiftRevealed = true;
+            saveProgress();
+            playSound('complete');
+
+            try {
+                confetti({
+                    particleCount: 90,
+                    spread: 75,
+                    origin: { y: 0.6 },
+                    colors: ['#FA114F', '#00F5EA', '#FFD700', '#FFFFFF']
+                });
+            } catch (e) {}
+
             document.getElementById('final-action-box').classList.add('hidden');
             document.getElementById('option-a-reveal').classList.remove('hidden');
         }
 
-        // Lightbox 放大檢視功能
-        function openLightbox(imgUrl, fallbackUrl, caption) {
-            const modal = document.getElementById('lightbox-modal');
+        // Lightbox
+        let currentLightboxNum = 1;
+        let touchStartX = 0;
+
+        function openLightboxByNum(num) {
+            currentLightboxNum = num;
+            updateLightboxContent();
+            document.getElementById('lightbox-modal').classList.remove('hidden');
+        }
+
+        function updateLightboxContent() {
             const imgEl = document.getElementById('lightbox-img');
             const capEl = document.getElementById('lightbox-caption');
-            
+            const counterEl = document.getElementById('lightbox-counter');
+            const pageImg = document.getElementById(`gallery-img-${currentLightboxNum}`);
+
+            const noteText = getNoteByPhotoNum(currentLightboxNum);
+            const fallbackUrl = getPlaceholderUrl(currentLightboxNum);
+
             imgEl.onerror = function() {
                 this.onerror = null;
                 this.src = fallbackUrl;
             };
-            imgEl.src = imgUrl;
-            capEl.textContent = caption;
-            modal.classList.remove('hidden');
+            imgEl.src = pageImg ? pageImg.src : getPhotoUrl(currentLightboxNum, 0);
+            capEl.textContent = `“${noteText}”`;
+            counterEl.textContent = `Photo #p${currentLightboxNum} / 65`;
+        }
+
+        function navigateLightbox(direction) {
+            currentLightboxNum += direction;
+            if (currentLightboxNum < 1) currentLightboxNum = 65;
+            if (currentLightboxNum > 65) currentLightboxNum = 1;
+            updateLightboxContent();
+        }
+
+        function handleTouchStart(e) {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                touchStartX = e.changedTouches[0].screenX;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                const touchEndX = e.changedTouches[0].screenX;
+                const diff = touchEndX - touchStartX;
+                if (Math.abs(diff) > 45) {
+                    if (diff < 0) navigateLightbox(1);
+                    else navigateLightbox(-1);
+                }
+            }
         }
 
         function closeLightbox() {
             document.getElementById('lightbox-modal').classList.add('hidden');
         }
+
+        window.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('lightbox-modal');
+            if (!modal.classList.contains('hidden')) {
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+                if (e.key === 'Escape') closeLightbox();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const hasSaved = loadSavedProgress();
+            updateRingsProgress();
+            if (hasSaved) {
+                document.getElementById('welcome-section').classList.add('hidden');
+                document.getElementById('chapter-tabs').classList.remove('hidden');
+                if (unlockedChapters.size === chaptersData.length) {
+                    showFinale();
+                } else {
+                    loadChapter(currentChapterIndex);
+                }
+            }
+        });
     </script>
 </body>
 </html>
