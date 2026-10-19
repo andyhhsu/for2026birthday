@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2025-2026 我們的時光圓環｜Christine 生日快樂</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ring-red: #FA114F;
+            --ring-green: #A4FF00;
+            --ring-blue: #00F5EA;
+        }
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #090A0F;
+            color: #F5F5F7;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', 'Noto Sans TC', serif;
+        }
+        /* Apple Watch 圓環進度動畫 */
+        .ring-circle {
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            stroke-linecap: round;
+        }
+        /* 玻璃擬態卡片 */
+        .glass-card {
+            background: rgba(28, 28, 30, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* 拍立得微傾效果 */
+        .polaroid-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .polaroid-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 24px -6px rgba(250, 17, 79, 0.25);
+        }
+        /* 心跳呼吸燈動畫 */
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.25); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+        .animate-heartbeat {
+            animation: heartbeat 1.6s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 25px rgba(250, 17, 79, 0.3), 0 0 50px rgba(164, 255, 0, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(250, 17, 79, 0.6), 0 0 80px rgba(0, 245, 234, 0.4); }
+        }
+        .ring-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-24 selection:bg-[#FA114F] selection:text-white">
+
+    <!-- 頂部固定導覽列：Apple Watch 圓環進度條 -->
+    <header class="fixed top-0 left-0 right-0 z-40 glass-card border-b border-white/10 px-4 py-3">
+        <div class="max-w-xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- 迷你三色圓環 SVG -->
+                <div class="relative w-11 h-11 flex items-center justify-center">
+                    <svg class="w-11 h-11" viewBox="0 0 100 100">
+                        <!-- 背景底環 -->
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-opacity="0.2" />
+                        <circle cx="50" cy="50" r="31" fill="none" stroke="#A4FF00" stroke-width="8" stroke-opacity="0.2" />
+                        <circle cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-opacity="0.2" />
+                        <!-- 動態進度環 -->
+                        <circle id="nav-ring-red" class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" />
+                        <circle id="nav-ring-green" class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#A4FF00" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="195" />
+                        <circle id="nav-ring-blue" class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-xs text-zinc-400 font-medium tracking-wider uppercase">2025-2026 Memory Rings</div>
+                    <div class="text-sm font-bold flex items-center gap-1.5">
+                        <span>回憶圓環進度：</span>
+                        <span id="progress-text" class="text-[#A4FF00] font-mono text-base">0%</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 模擬心率顯示 -->
+            <div class="flex items-center gap-1.5 bg-zinc-900/90 px-3 py-1.5 rounded-full border border-white/10">
+                <span class="text-[#FA114F] animate-heartbeat text-sm">❤️</span>
+                <span id="bpm-text" class="font-mono text-xs font-bold text-zinc-200">98 BPM</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主內容區 -->
+    <main class="max-w-xl mx-auto px-4 pt-24">
+
+        <!-- 開場歡迎卡片 (預設顯示) -->
+        <section id="welcome-section" class="glass-card rounded-3xl p-7 text-center my-4 border border-white/15 shadow-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FA114F]/15 border border-[#FA114F]/30 text-[#FA114F] text-xs font-semibold mb-4">
+                <span>✨ SPECIAL EDITION FOR CHRISTINE</span>
+            </div>
+            <h1 class="text-3xl font-black tracking-tight mb-3 bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
+                親愛的 Christine<br>生日快樂！
+            </h1>
+            <p class="text-zinc-300 text-sm leading-relaxed mb-6">
+                過去這一年，我們一起跨越了國界、破解了無數密室、在演唱會聲嘶力竭，也走過許多平凡卻閃亮的日常。<br><br>
+                我把這一年最珍貴的 <span class="text-[#00F5EA] font-bold">65 個瞬間</span>，收進了這座「時光圓環」裡。每當妳讀完一個篇章，頂部的圓環就會注滿能量。
+            </p>
+            <div class="bg-zinc-900/80 rounded-2xl p-4 mb-6 text-left border border-white/5 text-xs text-zinc-400 space-y-2">
+                <div class="flex items-center gap-2"><span class="text-[#FA114F] font-bold">● 活動圓環 (29張)</span>｜富士山之旅與韓國朋友婚禮</div>
+                <div class="flex items-center gap-2"><span class="text-[#A4FF00] font-bold">● 鍛鍊圓環 (10張)</span>｜密室逃脫與劇本殺的腦力激盪</div>
+                <div class="flex items-center gap-2"><span class="text-[#00F5EA] font-bold">● 相伴圓環 (26張)</span>｜日常點滴與演唱會點滴</div>
+            </div>
+            <button onclick="startJourney()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FA114F] to-[#FF5E3A] text-white font-bold text-base shadow-lg shadow-[#FA114F]/30 active:scale-98 transition transform cursor-pointer">
+                開始回顧我們的 2025 - 2026 ➔
+            </button>
+        </section>
+
+        <!-- 章節快速切換列 (進入旅程後顯示) -->
+        <nav id="chapter-tabs" class="hidden grid grid-cols-3 gap-2 mb-6">
+            <!-- 由 JS 動態生成 3 個篇章按鈕 -->
+        </nav>
+
+        <!-- 章節內容動態渲染區 -->
+        <div id="chapter-container" class="hidden space-y-8"></div>
+
+        <!-- 最終章：100% 圓環合攏 & Apple Watch 登場 (預設隱藏) -->
+        <section id="finale-section" class="hidden glass-card rounded-3xl p-7 text-center my-6 border border-[#A4FF00]/40 shadow-2xl">
+            <div class="text-xs font-bold tracking-widest uppercase text-[#A4FF00] mb-2">GOAL ACHIEVED • 100% COMPLETED</div>
+            <h2 class="text-2xl font-black mb-2">2025-2026 回憶圓環<br>完美合攏！</h2>
+            <p class="text-xs text-zinc-400 mb-6">65 張照片 • 3 大篇章 • 無數個心動的瞬間</p>
+
+            <!-- 大型發光三色圓環展示 -->
+            <div class="relative w-48 h-48 mx-auto mb-8 rounded-full flex items-center justify-center ring-glow bg-black/50 p-4">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <circle class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" />
+                    <circle class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#A4FF00" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="0" />
+                    <circle class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="0" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-2xl font-black text-white">100%</span>
+                    <span class="text-[10px] text-zinc-400 tracking-widest">UNLOCKED</span>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-sm text-zinc-200 leading-relaxed mb-8 bg-zinc-900/70 p-5 rounded-2xl border border-white/10">
+                <p>
+                    謝謝妳，在過去這一年裡，<br>
+                    陪我走過這麼多地方、解開這麼多謎題。
+                </p>
+                <p>
+                    過去的每一秒，我們已經用照片好好珍藏；<br>
+                    而**未來的每一秒、每一次心跳、每一趟旅程**，<br>
+                    我想用另一種方式，繼續陪伴並守護著妳。
+                </p>
+            </div>
+
+            <!-- 揭曉最終指令按鈕 -->
+            <div id="final-action-box">
+                <button onclick="triggerOptionA()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#00F5EA] via-[#A4FF00] to-[#FA114F] text-black font-black text-base shadow-xl active:scale-95 transition transform cursor-pointer">
+                    🎁 點擊開啟妳的專屬禮物儀式
+                </button>
+            </div>
+
+            <!-- 選項 A：閉眼伸手版 最終浪漫畫面 (點擊後顯示) -->
+            <div id="option-a-reveal" class="hidden mt-6 p-6 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border-2 border-[#FA114F] space-y-5">
+                <div class="w-14 h-14 rounded-full bg-[#FA114F]/20 text-[#FA114F] flex items-center justify-center mx-auto text-2xl animate-heartbeat">
+                    ⌚
+                </div>
+                <h3 class="text-xl font-black text-white leading-snug">
+                    現在，請閉上眼睛，<br>
+                    並把妳的<span class="text-[#00F5EA] underline underline-offset-4">左手</span>伸出來...
+                </h3>
+                <p class="text-xs text-zinc-400">
+                    （請保持閉眼，準備好後張開眼睛喔！）
+                </p>
+                <div class="pt-4 border-t border-white/10 flex flex-col items-center">
+                    <p class="text-xs text-zinc-500 mb-2">Happy Birthday, My Dearest Christine.</p>
+                    <img src="https://andyhhsu.github.io/for2025birthday/signature.png" alt="Signature" class="max-w-[160px] opacity-90 invert" onerror="this.style.display='none'">
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 點擊照片放大檢視 Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
+        <button class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 text-white text-xl flex items-center justify-center">&times;</button>
+        <img id="lightbox-img" src="" alt="放大照片" class="max-h-[78vh] max-w-full rounded-xl shadow-2xl border border-white/15 object-contain mb-4" onclick="event.stopPropagation()">
+        <p id="lightbox-caption" class="text-sm text-zinc-200 text-center max-w-md px-4 font-medium"></p>
+    </div>
+
+    <script>
+        // ============================================================================
+        // 🛠️ 【照片路徑與 3 大篇章設定區（總計 65 張照片）】
+        // ============================================================================
+        
+        const PHOTO_BASE_URL = "https://andyhhsu.github.io/for2026birthday/";
+
+        // 3 大篇章資料：Chapter 1 (29張: p1~p29), Chapter 2 (10張: p30~p39), Chapter 3 (26張: p40~p65)
+        const chaptersData = [
+            {
+                id: 1,
+                icon: "✈️",
+                shortTitle: "跨國時區",
+                title: "Chapter 1｜跨越國界的時區",
+                subtitle: "富士山下的悸動 × 韓國婚禮的見證（共 29 張）",
+                ringColor: "#FA114F",
+                bpm: 118,
+                photoRange: [1, 29],
+                notes: {
+                    1: "為了一睹富士山的真面目，我們早起吹風，但看到本尊露臉的那一刻，一切都值得了！",
+                    2: "富士山的背景太美，不小心拍了太多張洗版。",
+                    3: "這張的表情太經典，絕對要放進回憶錄第一頁XD",
+                    4: "在異國街頭散步的隨手拍，光影超好看。",
+                    5: "某人肚子餓之前的眼神，跟吃飽之後完全不同。",
+                    6: "富士山河口湖美景，某人拍照拍到完全忘記趕行程！",
+                    7: "這裡的風景安靜得讓人捨不得離開。",
+                    8: "捕捉到野生觀光客一隻。",
+                    9: "這天天氣好到爆炸，怎麼拍怎麼好看。",
+                    10: "走路走到鐵腿的見證照。",
+                    11: "異國的街道總是有各種驚喜。",
+                    12: "第一次一起飛去韓國參加婚禮，看別人幸福的樣子，身邊的妳也是最美的那一個。",
+                    13: "韓國婚禮場地超夢幻，我們也來沾沾喜氣。",
+                    14: "在首爾街頭尋找美食的路上。",
+                    15: "這張笑得超燦爛，必須收藏。",
+                    16: "韓國街拍系列第一彈。",
+                    17: "戰利品滿手的一天。",
+                    18: "準備回國前的依依不捨。",
+                    19: "跨國之旅完美收官！",
+                    20: "（第20張旅遊回憶）",
+                    21: "（第21張旅遊回憶）",
+                    22: "（第22張旅遊回憶）",
+                    23: "（第23張旅遊回憶）",
+                    24: "（第24張旅遊回憶）",
+                    25: "（第25張旅遊回憶）",
+                    26: "（第26張旅遊回憶）",
+                    27: "（第27張旅遊回憶）",
+                    28: "（第28張旅遊回憶）",
+                    29: "跨國時區篇的最後一刻，記憶永遠鮮明。"
+                }
+            },
+            {
+                id: 2,
+                icon: "🕵️‍♀️",
+                shortTitle: "燒腦倒數",
+                title: "Chapter 2｜燒腦的倒數計時",
+                subtitle: "那些一起破關（或求救）的密室逃脫與劇本殺（共 10 張）",
+                ringColor: "#A4FF00",
+                bpm: 132,
+                photoRange: [30, 39],
+                notes: {
+                    30: "每次進密室前都信誓旦旦說不求救，結果時間過一半就開始狂按對講機XD",
+                    31: "看妳認真盤邏輯、找兇手的表情，真的比劇本本身還要精彩！",
+                    32: "這場劇本殺我們超快就推理出來，簡訊神隊友無誤。",
+                    33: "密室裡的道具做得超逼真，我們兩個還被嚇了一跳。",
+                    34: "苦思解謎中的認真側臉。",
+                    35: "拿到線索的那一刻，眼神發光！",
+                    36: "不管兇手是不是妳，反正先投妳就對了（大誤）。",
+                    37: "驚險壓線逃出密室的勝利歡呼！",
+                    38: "劇本殺角色扮演，演技大爆發。",
+                    39: "不管最後是坦蕩破關還是狼狽逃出，只要跟最佳隊友妳一組，永遠都超好玩！"
+                }
+            },
+            {
+                id: 3,
+                icon: "☕",
+                shortTitle: "日常與藝文",
+                title: "Chapter 3｜日常點滴與搖滾藝文",
+                subtitle: "演唱會的聲嘶力竭 × 展覽日常與美食（共 26 張）",
+                ringColor: "#00F5EA",
+                bpm: 125,
+                photoRange: [40, 65],
+                notes: {
+                    40: "燈光暗下來、前奏響起的那一秒，我們的心跳大概都飆到 150 了吧！",
+                    41: "演唱會現場超嗨，嗓子直接喊到明天見。",
+                    42: "動靜皆宜的我們，除了在演唱會嗨翻，也能安安靜靜一起逛展覽。",
+                    43: "手裡拿著爆米花跟票根，跟妳看過的每一場電影，都是最棒的約會。",
+                    44: "這一年我們到底吃了多少好料？難怪需要運動手錶來督促！",
+                    45: "手機相簿裡有一半都是這種奇奇怪怪的怪表情合輯哈哈。",
+                    46: "日常散步的小確幸。",
+                    47: "發現神仙咖啡廳，心情跟著晴朗起來。",
+                    48: "週末的文青藝文行程。",
+                    49: "看展看到肚子餓的兩人。",
+                    50: "拍照技術有在進步，給自己拍拍手。",
+                    51: "美食當前，減肥永遠是明天的事。",
+                    52: "捕捉到野生可愛的妳。",
+                    53: "夕陽下的剪影，浪漫滿分。",
+                    54: "一起解鎖新的打卡景點。",
+                    55: "偶爾也有這種慵懶不想動的午後。",
+                    56: "生活不需要太盛大，有妳陪伴的日常就很閃亮。",
+                    57: "笑得眼睛都瞇起來了。",
+                    58: "這家店的甜點真的太強，必須記錄。",
+                    59: "街頭隨手拍，每一張都是回憶。",
+                    60: "慶祝某個平凡卻開心的日子。",
+                    61: "手牽手走過好多的春夏秋冬。",
+                    62: "相機記錄下我們最自然的互動。",
+                    63: "有妳在身邊，哪裡都是晴天。",
+                    64: "倒數第二張照片，代表我們的故事越發精采。",
+                    65: "第 65 張照片，我們的 2025-2026 回憶圓環，完美圓滿！"
+                }
+            }
+        ];
+
+        // 音效設定 (使用 Tone.js 產生清脆的 Apple Watch 風格提示音)
+        let synth;
+        function playRingSound(type) {
+            try {
+                if (Tone.context.state !== 'running') Tone.start();
+                if (!synth) {
+                    synth = new Tone.PolySynth(Tone.Synth, {
+                        oscillator: { type: "sine" },
+                        envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.8 }
+                    }).toDestination();
+                }
+                if (type === 'step') {
+                    synth.triggerAttackRelease(["E5", "A5"], "16n");
+                } else if (type === 'complete') {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C5", "8n", now);
+                    synth.triggerAttackRelease("E5", "8n", now + 0.12);
+                    synth.triggerAttackRelease("G5", "8n", now + 0.24);
+                    synth.triggerAttackRelease("C6", "4n", now + 0.36);
+                }
+            } catch (e) {
+                // 忽略瀏覽器未互動前的音效限制
+            }
+        }
+
+        // 狀態管理
+        let currentChapterIndex = 0;
+        let unlockedChapters = new Set();
+
+        // 產生圖片網址與智慧預設圖 (Fallback)
+        function getPhotoUrl(num) {
+            return `${PHOTO_BASE_URL}p${num}.jpg`;
+        }
+        function getPlaceholderUrl(num, chapterTitle) {
+            const colors = ["1e1b4b/f43f5e", "064e3b/a3e635", "0f172a/38bdf8", "3b0764/f472b6"];
+            const colorPair = colors[(num % 4)];
+            const text = encodeURIComponent(`Photo #${num}`);
+            return `https://placehold.co/600x750/${colorPair}?text=${text}`;
+        }
+
+        // 開始旅程
+        function startJourney() {
+            playRingSound('step');
+            document.getElementById('welcome-section').classList.add('hidden');
+            document.getElementById('chapter-tabs').classList.remove('hidden');
+            document.getElementById('chapter-container').classList.remove('hidden');
+            renderTabs();
+            loadChapter(0);
+        }
+
+        // 渲染上方 3 個章節頁籤
+        function renderTabs() {
+            const tabsEl = document.getElementById('chapter-tabs');
+            tabsEl.innerHTML = chaptersData.map((ch, idx) => {
+                const isActive = idx === currentChapterIndex;
+                const isDone = unlockedChapters.has(idx);
+                return `
+                    <button onclick="loadChapter(${idx})" class="py-2.5 px-2 rounded-2xl text-xs font-bold transition flex flex-col items-center gap-1 border cursor-pointer ${
+                        isActive 
+                            ? 'bg-white text-black border-white shadow-lg' 
+                            : isDone 
+                                ? 'bg-zinc-900/90 text-zinc-200 border-[#A4FF00]/50' 
+                                : 'bg-zinc-900/40 text-zinc-500 border-white/5'
+                    }">
+                        <span class="text-base">${isDone ? '✅' : ch.icon}</span>
+                        <span>${ch.shortTitle}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // 更新頂部 Apple Watch 三色圓環進度
+        function updateRingsProgress() {
+            const completedCount = unlockedChapters.size;
+            const percent = Math.min(100, Math.round((completedCount / chaptersData.length) * 100));
+            
+            document.getElementById('progress-text').textContent = `${percent}%`;
+
+            // 計算圓環 stroke-dashoffset
+            const redMax = 264, greenMax = 195, blueMax = 126;
+            document.getElementById('nav-ring-red').style.strokeDashoffset = redMax - (redMax * percent / 100);
+            document.getElementById('nav-ring-green').style.strokeDashoffset = greenMax - (greenMax * percent / 100);
+            document.getElementById('nav-ring-blue').style.strokeDashoffset = blueMax - (blueMax * percent / 100);
+        }
+
+        // 載入指定章節
+        function loadChapter(index) {
+            currentChapterIndex = index;
+            const ch = chaptersData[index];
+            document.getElementById('finale-section').classList.add('hidden');
+            document.getElementById('chapter-container').classList.remove('hidden');
+            document.getElementById('bpm-text').textContent = `${ch.bpm} BPM`;
+
+            renderTabs();
+
+            // 產生該章節所有照片的卡片牆（每張都附帶專屬吐槽文字）
+            let galleryItemsHTML = '';
+            for (let num = ch.photoRange[0]; num <= ch.photoRange[1]; num++) {
+                const imgUrl = getPhotoUrl(num);
+                const fallbackUrl = getPlaceholderUrl(num, ch.shortTitle);
+                const noteText = ch.notes[num] || `我們的珍貴瞬間 #${num}`;
+                
+                galleryItemsHTML += `
+                    <div class="glass-card rounded-3xl overflow-hidden border border-white/10 shadow-xl mb-4">
+                        <div class="relative aspect-[4/3] w-full bg-zinc-900 overflow-hidden cursor-pointer" onclick="openLightbox('${imgUrl}', '${fallbackUrl}', '回憶編號 #p${num}｜${noteText}')">
+                            <img src="${imgUrl}" alt="Photo ${num}" loading="lazy"
+                                 onerror="this.onerror=null; this.src='${fallbackUrl}';"
+                                 class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                            <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white border border-white/15">
+                                #p${num}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-zinc-100 text-sm leading-relaxed font-medium">
+                                “${noteText}”
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const isLastChapter = index === chaptersData.length - 1;
+            const nextBtnText = isLastChapter 
+                ? "✨ 完成本章，合攏 100% 圓環！" 
+                : `完成本章，前往 Chapter ${index + 2} ➔`;
+
+            const container = document.getElementById('chapter-container');
+            container.innerHTML = `
+                <div class="glass-card rounded-3xl p-6 border-l-4" style="border-left-color: ${ch.ringColor}">
+                    <div class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1">${ch.icon} MEMORY CHAPTER 0${ch.id}</div>
+                    <h2 class="text-2xl font-black text-white mb-1">${ch.title}</h2>
+                    <p class="text-xs text-zinc-300">${ch.subtitle}</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-1">
+                        <h3 class="text-sm font-bold text-zinc-300 flex items-center gap-1.5">
+                            <span>🎞️</span> 本章完整回憶相簿 (${ch.photoRange[1] - ch.photoRange[0] + 1}張)
+                        </h3>
+                        <span class="text-xs text-zinc-500">點擊照片可放大檢視</span>
+                    </div>
+                    ${galleryItemsHTML}
+                </div>
+
+                <div class="pt-4">
+                    <button onclick="completeChapter(${index})" class="w-full py-4 rounded-2xl bg-white text-black font-black text-base shadow-xl hover:bg-zinc-200 active:scale-98 transition transform cursor-pointer">
+                        ${nextBtnText}
+                    </button>
+                </div>
+            `;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 完成章節並推進圓環
+        function completeChapter(index) {
+            unlockedChapters.add(index);
+            updateRingsProgress();
+            renderTabs();
+
+            if (unlockedChapters.size === chaptersData.length) {
+                showFinale();
+            } else {
+                playRingSound('step');
+                loadChapter(index + 1);
+            }
+        }
+
+        // 顯示最終 100% 合攏畫面
+        function showFinale() {
+            playRingSound('complete');
+            document.getElementById('chapter-container').classList.add('hidden');
+            document.getElementById('finale-section').classList.remove('hidden');
+            document.getElementById('bpm-text').textContent = "168 BPM";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 觸發選項 A：閉眼伸手領取 Apple Watch 12
+        function triggerOptionA() {
+            playRingSound('complete');
+            document.getElementById('final-action-box').classList.add('hidden');
+            document.getElementById('option-a-reveal').classList.remove('hidden');
+        }
+
+        // Lightbox 放大檢視功能
+        function openLightbox(imgUrl, fallbackUrl, caption) {
+            const modal = document.getElementById('lightbox-modal');
+            const imgEl = document.getElementById('lightbox-img');
+            const capEl = document.getElementById('lightbox-caption');
+            
+            imgEl.onerror = function() {
+                this.onerror = null;
+                this.src = fallbackUrl;
+            };
+            imgEl.src = imgUrl;
+            capEl.textContent = caption;
+            modal.classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
