@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2025-2026 專屬回憶錄｜Happy Birthday Christine</title>
-    <!-- 載入 Tailwind CSS、Tone.js 音效與 Confetti 彩帶套件 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <script src="https://jsdelivr.com/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -166,7 +165,6 @@
 </head>
 <body class="min-h-screen pb-28 selection:bg-[#FA114F] selection:text-white relative">
 
-    <!-- 沉浸式香檳金星塵微光背景 -->
     <canvas id="gold-dust-canvas"></canvas>
 
     <!-- 鎖定提示 Toast 訊息 -->
@@ -183,7 +181,6 @@
         <p class="text-xs text-zinc-400 max-w-xs leading-relaxed" id="trans-desc">正在開啟下一段旅程...</p>
     </div>
 
-    <!-- 頂部導覽列（防劇透四芒星紀念徽章） -->
     <header class="fixed top-0 left-0 right-0 z-40 glass-card border-b border-white/10 px-4 py-3">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -210,7 +207,6 @@
                 </div>
             </div>
 
-            <!-- 右側：背景音樂開關 -->
             <div class="flex items-center gap-2">
                 <button id="bgm-btn" type="button" onclick="toggleBGM()" title="背景音樂開關" class="w-9 h-9 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center text-sm text-zinc-400 hover:text-white transition cursor-pointer">
                     🔇
@@ -221,7 +217,6 @@
 
     <main class="relative z-10 max-w-xl mx-auto px-4 pt-24">
 
-        <!-- 開場歡迎區 -->
         <section id="welcome-section" class="glass-card rounded-3xl p-7 text-center my-4 border border-white/15 shadow-2xl">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FA114F]/15 border border-[#FA114F]/30 text-[#FA114F] text-xs font-semibold mb-4">
                 <span>✨ SPECIAL EDITION FOR CHRISTINE</span>
@@ -249,7 +244,6 @@
         <!-- 章節主內容容器 -->
         <div id="chapter-container" class="hidden space-y-6"></div>
 
-        <!-- 最終結局區 -->
         <section id="finale-section" class="hidden glass-card rounded-3xl p-7 text-center my-6 border border-[#FFD700]/40 shadow-2xl">
             <div class="text-xs font-bold tracking-widest uppercase text-[#FFD700] mb-2">MEMORIES FULLY UNLOCKED • 100%</div>
             <h2 class="text-2xl font-black mb-2">2025-2026 記憶畫冊<br>完美合攏！</h2>
@@ -286,15 +280,11 @@
                 </p>
 
                 <div class="relative w-32 h-40 mx-auto flex flex-col items-center justify-end cursor-pointer select-none group" onclick="blowOutCandle()">
-                    <!-- 燭火 -->
                     <div id="candle-flame-el" class="candle-flame mb-1 flex flex-col items-center">
                         <div class="w-6 h-10 rounded-full bg-gradient-to-t from-[#FF5E3A] via-[#FFD700] to-white shadow-lg"></div>
                     </div>
-                    <!-- 吹熄後的輕煙 -->
                     <div id="candle-smoke-el" class="hidden text-2xl text-zinc-400 mb-2">💨</div>
-                    <!-- 燭芯 -->
                     <div class="w-1 h-2.5 bg-zinc-600 rounded-t"></div>
-                    <!-- 蛋糕與蠟燭本體 -->
                     <div class="w-8 h-16 bg-gradient-to-b from-[#FFF8E7] to-[#E6D5B8] rounded-t-md border border-white/20 relative overflow-hidden shadow-md">
                         <div class="w-full h-2 bg-[#FA114F]/80 mt-3"></div>
                         <div class="w-full h-2 bg-[#FFD700]/80 mt-3"></div>
@@ -308,7 +298,7 @@
                 <p class="text-[11px] text-zinc-400 mt-4">（點擊燭火即可吹熄蠟燭）</p>
             </div>
 
-            <!-- 吹熄蠟燭後浮現的長按禮物盒 -->
+            <!-- 長按禮物盒 -->
             <div id="final-action-box" class="hidden py-5 px-3 rounded-2xl bg-zinc-900/80 border border-white/10">
                 <p id="sensor-status" class="text-xs text-[#00F5EA] font-bold mb-4 tracking-wide">
                     👇 願望已封存！現在請「長按」下方禮物 3 秒，開啟屬於妳的生日驚喜
@@ -368,7 +358,7 @@
 
     </main>
 
-    <!-- 右下角快速跳轉至本章問答按鈕 -->
+    <!-- 右下角快速跳轉按鈕 -->
     <div id="floating-nav" class="fixed bottom-5 right-4 z-30 hidden">
         <button type="button" onclick="scrollToQuiz()" class="px-4 py-2.5 rounded-full bg-zinc-900/90 backdrop-blur-md border border-[#FFD700]/40 text-xs font-bold text-[#FFD700] shadow-xl flex items-center gap-1.5 active:scale-95 transition cursor-pointer">
             <span>🔐</span>
@@ -376,7 +366,7 @@
         </button>
     </div>
 
-    <!-- 全螢幕照片放大檢視 Lightbox -->
+    <!-- 燈箱 Lightbox -->
     <div id="lightbox" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4"
          ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
         <div class="w-full max-w-lg flex items-center justify-between mb-3 px-1">
@@ -402,7 +392,7 @@
 
     <script>
         const PHOTO_BASE_URL = "https://andyhhsu.github.io/for2026birthday/";
-        const STORAGE_KEY = "christine_2026_rings_state_v10";
+        const STORAGE_KEY = "christine_2026_rings_state_v11";
 
         const chaptersData = [
             {
@@ -413,13 +403,13 @@
                 subtitle: "富士山 × 東京 × 韓國聖水洞 × 馬祖大坵島（共 29 張）",
                 ringColor: "#FA114F",
                 photoRange: [1, 29],
-                highlights: [1, 6, 12, 20, 25],
+                highlights: [6, 15, 20],
                 quiz: {
-                    question: "【第一道鎖：遺失的登機證航班代號】\n準備好飛往下一個章節了嗎？這張通關登機證的航班代號由「2 個英文字母 ＋ 2 個數字」組成（共 4 碼）：\n\n1. 前 2 碼（英文）：在韓國行中，那間讓我們「無止盡的 O…」狂逛的知名美妝店，請取它「英文店名兩個單字的字首縮寫」（2 個英文字母）。\n2. 後 2 碼（數字）：瞬間回到東京時，那間讓我們覺得「好像可以再看」的表演店名裡，藏著哪 2 個數字？\n\n請輸入這組 4 碼航班代號解鎖：",
+                    question: "【第一道鎖：特務登機證航班代號】\n準備好飛往下一個章節了嗎？這張通關登機證的航班代號由「2 個英文字母 ＋ 2 個數字」組成（共 4 碼）：\n\n1. 前 2 碼（英文）：在韓國行中，那間讓我們「無止盡的 O…」狂逛的知名美妝店，請取它「英文店名兩個單字的字首縮寫」（2 個英文字母）。\n2. 後 2 碼（數字）：瞬間回到東京時，那間讓我們覺得「好像可以再看」的表演店名裡，藏著哪 2 個數字？\n\n請輸入這組 4 碼航班代號解鎖：",
                     placeholder: "請輸入 2碼英文 + 2碼數字（共4碼）...",
                     type: "exact",
                     acceptedAnswers: ["oy63", "oliveyoung63", "olive young 63", "63oy"],
-                    hint: "【航線驗證提示】：前 2 碼請回想首爾聖水洞那條街上讓妳逛到走不動、名字裡充滿「O」的美妝天堂英文全名，取前面兩個單字的開頭字母；後 2 碼請翻閱東京那天的記憶，表演店名裡藏著的 2 位數。"
+                    hint: "【航線驗證提示】：\n1. 前 2 碼請回想首爾聖水洞那條街上讓妳逛到走不動、名字裡充滿「O」的美妝天堂英文全名，取前面兩個單字的開頭字母。\n2. 後 2 碼請翻閱東京那天的記憶，表演店名裡藏著的 2 位數。"
                 },
                 notes: {
                     1: "全世界最可怕的雲霄飛車...挑戰成功(O)!",
@@ -461,7 +451,7 @@
                 subtitle: "那些一起破關的密室逃脫與神級機關（共 10 張）",
                 ringColor: "#FFD700",
                 photoRange: [30, 39],
-                highlights: [30, 33, 36, 39],
+                highlights: [36, 38, 39],
                 quiz: {
                     question: "【第二道鎖：九宮格密室軌跡】\n下方是我們挑戰過的 9 座密室主題陣列。請根據本章照片下的回憶紀錄，從起點開始，用手指在九宮格上依序將這 7 座密室連起來：",
                     customHTML: `
@@ -518,13 +508,13 @@
                 subtitle: "紀念日、泡湯、演唱會與生活裡的小確幸（共 26 張）",
                 ringColor: "#00F5EA",
                 photoRange: [40, 65],
-                highlights: [40, 49, 51, 61, 64],
+                highlights: [45, 49, 59],
                 quiz: {
-                    question: "【最終魔王題：時光保險箱】\n恭喜妳來到最後一關！這座保險箱需要輸入一組 4 位數終極密碼。\n請找出以下兩個關鍵日子的照片編號：\n• X = 某張照片的註解裡被故意打錯字（諧音錯別字）的那張照片編號\n• Y = 我們「七週年紀念日」的那張照片編號\n\n最後請解開這道專屬方程式，輸入 4 位數終極密碼：\n(X × 18) - Y + 7 = ?",
+                    question: "【最終魔王題：時光保險箱】\n恭喜妳來到最後一關！這座保險箱需要輸入一組 4 位數終極密碼。\n請找出以下兩個關鍵日子的照片編號：\n• X = 某張照片的註解裡被我故意打錯字（諧音錯別字）的那張照片編號\n• Y = 我們「七週年紀念日」的那張照片編號\n\n最後請解開這道專屬方程式，輸入 4 位數終極密碼：\n(X × 18) - Y + 7 = ?",
                     placeholder: "請輸入計算後的 4 位數密碼...",
                     type: "exact",
                     acceptedAnswers: ["1110"],
-                    hint: "【保險箱密碼提示】：\n1. 尋找 X：這 65 張照片裡，有一張照片的註解被故意打錯字了，找出那張照片的編號（X=64）。\n2. 尋找 Y：找出我們慶祝「七週年紀念日」的那張照片編號（Y=49）。\n3. 代入公式計算：(64 × 18) - 49 + 7 就是妳的生日數字！"
+                    hint: "【保險箱密碼提示】：\n1. 尋找 X：這 65 張照片裡，有一張照片的註解被我故意打錯字了（同音錯別字），找出那張照片的編號（X=64）。\n2. 尋找 Y：找出我們慶祝「七週年紀念日」的那張照片編號（Y=49）。\n3. 代入公式計算：(64 × 18) - 49 + 7 就是妳的生日數字！"
                 },
                 notes: {
                     40: "去年的生日餐! 覺得前幾名好吃的牛排店",
