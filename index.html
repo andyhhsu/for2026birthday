@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-Hant" class="dark">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025-2026 我們的時光光環｜Christine 生日快樂</title>
+    <title>2025-2026 專屬回憶錄｜Happy Birthday Christine</title>
+    <!-- 載入 Tailwind CSS、Tone.js 音效與 Confetti 彩帶套件 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://jsdelivr.com/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,44 +23,119 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
-        .serif-title {
-            font-family: 'Playfair Display', 'Noto Sans TC', serif;
-        }
-        .ring-circle {
-            transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-            stroke-linecap: round;
+        #gold-dust-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
         .glass-card {
-            background: rgba(28, 28, 30, 0.75);
+            background: rgba(24, 24, 28, 0.82);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        /* 圖片外框不裁切，維持真實比例 */
-        .adaptive-photo-box {
-            position: relative;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.04) 0%, rgba(9,10,15,0.95) 100%);
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-box {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,215,0,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite linear;
+        }
+        .img-fade {
+            opacity: 0;
+            transition: opacity 0.45s ease-out;
+        }
+        .img-fade.loaded {
+            opacity: 1;
+        }
+        .polaroid-scroll {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 260px;
-            max-height: 560px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 16px;
+            padding: 14px 6px 20px 6px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .polaroid-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .polaroid-card {
+            scroll-snap-align: center;
+            flex: 0 0 80%;
+            max-width: 300px;
+            background: linear-gradient(145deg, #1f1f27 0%, #141419 100%);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 20px;
+            padding: 12px 12px 16px 12px;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .polaroid-tape {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 64px;
+            height: 18px;
+            background: rgba(255, 215, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(4px);
+            border-radius: 3px;
+            z-index: 10;
+        }
+        .magazine-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            align-items: start;
+        }
+        .magazine-item {
+            background: rgba(24, 24, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
             overflow: hidden;
-            padding: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+            display: flex;
+            flex-direction: column;
         }
-        .adaptive-photo-box img {
-            max-height: 520px;
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        .magazine-item:hover {
+            border-color: rgba(255, 215, 0, 0.35);
         }
-        .adaptive-photo-box:hover img {
-            transform: scale(1.02);
+        @keyframes float-heart {
+            0% { transform: translate(-50%, -50%) scale(0.3) rotate(-10deg); opacity: 1; }
+            50% { transform: translate(-50%, -75%) scale(1.25) rotate(8deg); opacity: 1; }
+            100% { transform: translate(-50%, -120%) scale(1) rotate(0deg); opacity: 0; }
+        }
+        .pop-heart {
+            position: absolute;
+            pointer-events: none;
+            z-index: 30;
+            font-size: 2.2rem;
+            filter: drop-shadow(0 4px 12px rgba(250, 17, 79, 0.6));
+            animation: float-heart 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes flicker {
+            0%, 100% { transform: scale(1) rotate(-1deg); opacity: 0.95; filter: drop-shadow(0 0 18px #FFD700) drop-shadow(0 0 35px #FA114F); }
+            50% { transform: scale(1.08, 0.94) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 26px #FFD700) drop-shadow(0 0 45px #FF5E3A); }
+        }
+        .candle-flame {
+            animation: flicker 1.6s infinite ease-in-out;
+            transform-origin: bottom center;
+        }
+        @keyframes smoke-rise {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.8; }
+            100% { transform: translateY(-45px) scale(1.6); opacity: 0; }
+        }
+        .candle-smoke {
+            animation: smoke-rise 1.4s ease-out forwards;
         }
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 25px rgba(250, 17, 79, 0.3), 0 0 50px rgba(255, 215, 0, 0.2); }
@@ -88,42 +164,64 @@
         }
     </style>
 </head>
-<body class="min-h-screen pb-28 selection:bg-[#FA114F] selection:text-white">
+<body class="min-h-screen pb-28 selection:bg-[#FA114F] selection:text-white relative">
 
+    <!-- 沉浸式香檳金星塵微光背景 -->
+    <canvas id="gold-dust-canvas"></canvas>
+
+    <!-- 鎖定提示 Toast 訊息 -->
+    <div id="lock-toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 hidden bg-zinc-900/95 border border-[#FA114F]/60 text-white px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 backdrop-blur-md">
+        <span>🔒</span>
+        <span id="lock-toast-text">請先解開上一章節的謎題才能進入喔！</span>
+    </div>
+
+    <!-- 電影級章節轉場過場動畫 Overlay -->
+    <div id="chapter-transition-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500">
+        <div class="w-16 h-16 rounded-full bg-[#FFD700]/15 border border-[#FFD700]/40 flex items-center justify-center text-3xl mb-4 animate-bounce" id="trans-icon">✨</div>
+        <div class="text-[11px] font-mono uppercase tracking-[0.3em] text-[#FFD700] mb-2" id="trans-sub">CHAPTER UNLOCKED</div>
+        <h3 class="text-2xl font-black text-white mb-2" id="trans-title">記憶已封存</h3>
+        <p class="text-xs text-zinc-400 max-w-xs leading-relaxed" id="trans-desc">正在開啟下一段旅程...</p>
+    </div>
+
+    <!-- 頂部導覽列（防劇透四芒星紀念徽章） -->
     <header class="fixed top-0 left-0 right-0 z-40 glass-card border-b border-white/10 px-4 py-3">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- 玫瑰金星光多層記憶光環 (防劇透設計) -->
-                <div class="relative w-11 h-11 flex items-center justify-center">
-                    <svg class="w-11 h-11" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-opacity="0.2" />
-                        <circle cx="50" cy="50" r="31" fill="none" stroke="#FFD700" stroke-width="8" stroke-opacity="0.2" />
-                        <circle cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-opacity="0.2" />
-                        <circle id="nav-ring-1" class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" />
-                        <circle id="nav-ring-2" class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="195" />
-                        <circle id="nav-ring-3" class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" />
+                <div class="relative w-11 h-11 flex items-center justify-center rounded-2xl bg-gradient-to-br from-zinc-800/90 to-zinc-950 border border-[#FFD700]/30 shadow-inner">
+                    <svg class="w-7 h-7" viewBox="0 0 100 100">
+                        <defs>
+                            <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFD700" />
+                                <stop offset="50%" stop-color="#FA114F" />
+                                <stop offset="100%" stop-color="#00F5EA" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M50 8 L61 39 L92 50 L61 61 L50 92 L39 61 L8 50 L39 39 Z" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="6" stroke-linejoin="round" />
+                        <path id="nav-star-path" d="M50 8 L61 39 L92 50 L61 61 L50 92 L39 61 L8 50 L39 39 Z" fill="none" stroke="url(#starGrad)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="260" stroke-dashoffset="260" style="transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);" />
+                        <circle cx="50" cy="50" r="6" fill="#FFD700" />
                     </svg>
                 </div>
                 <div>
-                    <div class="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">2025-2026 Memory Rings</div>
-                    <div class="text-xs sm:text-sm font-bold flex items-center gap-1">
+                    <div class="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">2025-2026 Memory Book</div>
+                    <div class="text-xs sm:text-sm font-bold flex items-center gap-2">
                         <span>記憶拼圖：</span>
                         <span id="progress-text" class="text-[#FFD700] font-mono text-sm sm:text-base">0%</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 右側：背景音樂開關 (無多餘干擾) -->
+            <!-- 右側：背景音樂開關 -->
             <div class="flex items-center gap-2">
-                <button id="bgm-btn" onclick="toggleBGM()" title="背景音樂開關" class="w-8 h-8 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center text-xs text-zinc-400 hover:text-white transition cursor-pointer">
+                <button id="bgm-btn" type="button" onclick="toggleBGM()" title="背景音樂開關" class="w-9 h-9 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center text-sm text-zinc-400 hover:text-white transition cursor-pointer">
                     🔇
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-4 pt-24">
+    <main class="relative z-10 max-w-xl mx-auto px-4 pt-24">
 
+        <!-- 開場歡迎區 -->
         <section id="welcome-section" class="glass-card rounded-3xl p-7 text-center my-4 border border-white/15 shadow-2xl">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FA114F]/15 border border-[#FA114F]/30 text-[#FA114F] text-xs font-semibold mb-4">
                 <span>✨ SPECIAL EDITION FOR CHRISTINE</span>
@@ -133,37 +231,37 @@
             </h1>
             <p class="text-zinc-300 text-sm leading-relaxed mb-6">
                 過去這一年，我們一起飛越了好多城市、破解了無數密室，也走過許多平凡卻閃亮的日常。<br><br>
-                我把這一年最珍貴的 <span class="text-[#FFD700] font-bold">65 個瞬間</span>，收進了這本回憶錄裡。每當妳看完一個篇章並解開專屬的記憶問答，頂部的時光光環就會更完整！
+                我把這一年最珍貴的 <span class="text-[#FFD700] font-bold">65 個瞬間</span>，收進了這本互動畫冊裡。身為最佳解謎夥伴，妳必須**依序解開每一章潛藏在照片與文字裡的密室級謎題**，才能解鎖下一章的回憶！
             </p>
             <div class="bg-zinc-900/80 rounded-2xl p-4 mb-6 text-left border border-white/5 text-xs text-zinc-400 space-y-2">
-                <div class="flex items-center gap-2"><span class="text-[#FA114F] font-bold">● 飛行日記 (29張)</span>｜日本富士山、韓國婚禮與馬祖之旅</div>
-                <div class="flex items-center gap-2"><span class="text-[#00F5EA] font-bold">● 解謎夥伴 (10張)</span>｜密室逃脫與劇本殺的腦力激盪</div>
-                <div class="flex items-center gap-2"><span class="text-[#FFD700] font-bold">● 日常點滴 (26張)</span>｜演唱會、看展與閃閃發光的每個日常</div>
+                <div class="flex items-center gap-2"><span class="text-[#FA114F] font-bold">● 飛行日記 (29張)</span>｜富士山、東京、韓國聖水洞與馬祖大坵島</div>
+                <div class="flex items-center gap-2"><span class="text-[#FFD700] font-bold">🔒 解謎夥伴 (10張)</span>｜需先通過第一章考驗方可解鎖</div>
+                <div class="flex items-center gap-2"><span class="text-[#00F5EA] font-bold">🔒 日常點滴 (26張)</span>｜需先通過第二章考驗方可解鎖</div>
             </div>
-            <button onclick="startJourney()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FA114F] to-[#FF5E3A] text-white font-bold text-base shadow-lg shadow-[#FA114F]/30 active:scale-98 transition transform cursor-pointer">
-                開始回顧我們的 2025 - 2026 ➔
+            <button type="button" onclick="startJourney()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FA114F] to-[#FF5E3A] text-white font-bold text-base shadow-lg shadow-[#FA114F]/30 active:scale-95 transition transform cursor-pointer">
+                翻開我們的 2025 - 2026 畫冊 ➔
             </button>
         </section>
 
-        <nav id="chapter-tabs" class="hidden grid grid-cols-3 gap-2 mb-6">
-        </nav>
+        <!-- 章節切換標籤 -->
+        <nav id="chapter-tabs" class="hidden grid grid-cols-3 gap-2 mb-6"></nav>
 
-        <div id="chapter-container" class="hidden space-y-8"></div>
+        <!-- 章節主內容容器 -->
+        <div id="chapter-container" class="hidden space-y-6"></div>
 
+        <!-- 最終結局區 -->
         <section id="finale-section" class="hidden glass-card rounded-3xl p-7 text-center my-6 border border-[#FFD700]/40 shadow-2xl">
             <div class="text-xs font-bold tracking-widest uppercase text-[#FFD700] mb-2">MEMORIES FULLY UNLOCKED • 100%</div>
-            <h2 class="text-2xl font-black mb-2">2025-2026 回憶光環<br>完美合攏！</h2>
+            <h2 class="text-2xl font-black mb-2">2025-2026 記憶畫冊<br>完美合攏！</h2>
             <p class="text-xs text-zinc-400 mb-6">65 張照片 • 3 大篇章 • 無數個閃閃發光的瞬間</p>
 
-            <div class="relative w-44 h-44 mx-auto mb-8 rounded-full flex items-center justify-center ring-glow bg-black/50 p-4">
-                <svg class="w-full h-full" viewBox="0 0 100 100">
-                    <circle class="ring-circle" cx="50" cy="50" r="42" fill="none" stroke="#FA114F" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" />
-                    <circle class="ring-circle" cx="50" cy="50" r="31" fill="none" stroke="#FFD700" stroke-width="8" stroke-dasharray="195" stroke-dashoffset="0" />
-                    <circle class="ring-circle" cx="50" cy="50" r="20" fill="none" stroke="#00F5EA" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="0" />
+            <div class="relative w-36 h-36 mx-auto mb-6 rounded-full flex items-center justify-center ring-glow bg-black/50 p-4 border border-[#FFD700]/30">
+                <svg class="w-24 h-24" viewBox="0 0 100 100">
+                    <path d="M50 6 L63 37 L94 50 L63 63 L50 94 L37 63 L6 50 L37 37 Z" fill="rgba(255,215,0,0.12)" stroke="url(#starGrad)" stroke-width="5" stroke-linejoin="round" />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                     <span class="text-2xl font-black text-white">100%</span>
-                    <span class="text-[10px] text-zinc-400 tracking-widest">COMPLETE</span>
+                    <span class="text-[10px] text-[#FFD700] tracking-widest">COMPLETE</span>
                 </div>
             </div>
 
@@ -174,14 +272,46 @@
                 </p>
                 <p>
                     過去的每一秒，我們已經用照片好好珍藏；<br>
-                    而<span class="text-white font-bold">未來的每一刻、每一次心動、每一趟旅程</span>，<br>
+                    而<span class="text-white font-bold">未來的每一刻、每一次心動、每一次旅程</span>，<br>
                     我想繼續陪伴並守護著妳。
                 </p>
             </div>
 
-            <div id="final-action-box" class="py-4 px-3 rounded-2xl bg-zinc-900/80 border border-white/10">
+            <!-- 許願吹熄生日蠟燭儀式 -->
+            <div id="candle-wish-box" class="py-6 px-4 rounded-2xl bg-gradient-to-b from-zinc-900/90 to-black border border-[#FFD700]/30 mb-4">
+                <div class="text-xs font-bold text-[#FFD700] tracking-wider uppercase mb-2">🕯️ BIRTHDAY WISH RITUAL</div>
+                <p id="candle-instruction" class="text-sm text-zinc-200 font-medium mb-6">
+                    在開啟最終驚喜前，請先在心裡默念今年的生日願望，<br>
+                    許好願後，<span class="text-[#FFD700] font-bold underline">點擊下方的燭火</span>吹熄蠟燭 ✨
+                </p>
+
+                <div class="relative w-32 h-40 mx-auto flex flex-col items-center justify-end cursor-pointer select-none group" onclick="blowOutCandle()">
+                    <!-- 燭火 -->
+                    <div id="candle-flame-el" class="candle-flame mb-1 flex flex-col items-center">
+                        <div class="w-6 h-10 rounded-full bg-gradient-to-t from-[#FF5E3A] via-[#FFD700] to-white shadow-lg"></div>
+                    </div>
+                    <!-- 吹熄後的輕煙 -->
+                    <div id="candle-smoke-el" class="hidden text-2xl text-zinc-400 mb-2">💨</div>
+                    <!-- 燭芯 -->
+                    <div class="w-1 h-2.5 bg-zinc-600 rounded-t"></div>
+                    <!-- 蛋糕與蠟燭本體 -->
+                    <div class="w-8 h-16 bg-gradient-to-b from-[#FFF8E7] to-[#E6D5B8] rounded-t-md border border-white/20 relative overflow-hidden shadow-md">
+                        <div class="w-full h-2 bg-[#FA114F]/80 mt-3"></div>
+                        <div class="w-full h-2 bg-[#FFD700]/80 mt-3"></div>
+                    </div>
+                    <div class="w-24 h-7 bg-gradient-to-r from-rose-500/80 via-pink-500/80 to-rose-500/80 rounded-t-xl border-t border-white/30 flex items-center justify-center text-[10px] font-bold text-white tracking-widest">
+                        11 • 10
+                    </div>
+                    <div class="w-32 h-2 bg-zinc-700 rounded-full"></div>
+                </div>
+
+                <p class="text-[11px] text-zinc-400 mt-4">（點擊燭火即可吹熄蠟燭）</p>
+            </div>
+
+            <!-- 吹熄蠟燭後浮現的長按禮物盒 -->
+            <div id="final-action-box" class="hidden py-5 px-3 rounded-2xl bg-zinc-900/80 border border-white/10">
                 <p id="sensor-status" class="text-xs text-[#00F5EA] font-bold mb-4 tracking-wide">
-                    👇 請將手指「長按」下方禮物 3 秒，將我們一整年的心意與回憶存放在一起
+                    👇 願望已封存！現在請「長按」下方禮物 3 秒，開啟屬於妳的生日驚喜
                 </p>
 
                 <div class="relative w-28 h-28 mx-auto flex items-center justify-center select-none">
@@ -190,7 +320,7 @@
                         <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6" />
                         <circle id="hold-progress-ring" cx="50" cy="50" r="44" fill="none" stroke="#FA114F" stroke-width="6" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5" />
                     </svg>
-                    <button id="heart-sensor-btn"
+                    <button id="heart-sensor-btn" type="button"
                             onmousedown="startHeartScan(event)"
                             onmouseup="cancelHeartScan(event)"
                             onmouseleave="cancelHeartScan(event)"
@@ -210,7 +340,7 @@
             </div>
 
             <div id="option-a-reveal" class="hidden mt-6 p-6 rounded-2xl bg-gradient-to-b from-zinc-900 to-black border-2 border-[#FA114F] space-y-5">
-                <div class="w-14 h-14 rounded-full bg-[#FA114F]/20 text-[#FA114F] flex items-center justify-center mx-auto text-2xl animate-heartbeat">
+                <div class="w-14 h-14 rounded-full bg-[#FA114F]/20 text-[#FA114F] flex items-center justify-center mx-auto text-2xl">
                     🎁
                 </div>
                 <h3 class="text-xl font-black text-white leading-snug">
@@ -230,7 +360,7 @@
             </div>
 
             <div class="mt-8 pt-4 border-t border-white/5 text-center">
-                <button onclick="resetAllProgress()" class="text-[11px] text-zinc-600 hover:text-zinc-400 underline cursor-pointer">
+                <button type="button" onclick="resetAllProgress()" class="text-[11px] text-zinc-600 hover:text-zinc-400 underline cursor-pointer">
                     🔄 重新體驗 / 重置所有闖關進度
                 </button>
             </div>
@@ -238,42 +368,41 @@
 
     </main>
 
-    <div id="floating-nav" class="fixed bottom-5 right-4 z-30 hidden flex flex-col gap-2">
-        <button onclick="scrollToQuiz()" class="px-3.5 py-2.5 rounded-full glass-card border border-white/20 text-xs font-bold text-white shadow-xl flex items-center gap-1.5 active:scale-95 transition cursor-pointer">
+    <!-- 右下角快速跳轉至本章問答按鈕 -->
+    <div id="floating-nav" class="fixed bottom-5 right-4 z-30 hidden">
+        <button type="button" onclick="scrollToQuiz()" class="px-4 py-2.5 rounded-full bg-zinc-900/90 backdrop-blur-md border border-[#FFD700]/40 text-xs font-bold text-[#FFD700] shadow-xl flex items-center gap-1.5 active:scale-95 transition cursor-pointer">
             <span>🔐</span>
-            <span>直達本章問答</span>
-        </button>
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="self-end w-10 h-10 rounded-full glass-card border border-white/15 text-xs font-bold text-zinc-300 shadow-xl flex items-center justify-center active:scale-95 transition cursor-pointer" title="回到頂部">
-            ↑
+            <span>直達本章問答 ↓</span>
         </button>
     </div>
 
-    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
-        <div class="absolute top-4 left-4 right-4 flex items-center justify-between max-w-xl mx-auto">
-            <span id="lightbox-counter" class="px-3 py-1 rounded-full bg-white/10 text-xs font-mono text-zinc-300"></span>
-            <button onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl flex items-center justify-center cursor-pointer">&times;</button>
-        </div>
-
-        <div class="relative w-full max-w-2xl flex items-center justify-center my-2" onclick="event.stopPropagation()"
-             ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-            <button onclick="navigateLightbox(-1)" class="absolute left-1 sm:left-2 z-10 w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 active:scale-90 transition cursor-pointer">
-                &#10094;
-            </button>
-            <img id="lightbox-img" src="" alt="放大照片" class="max-h-[72vh] max-w-full rounded-xl shadow-2xl border border-white/15 object-contain select-none">
-            <button onclick="navigateLightbox(1)" class="absolute right-1 sm:right-2 z-10 w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 active:scale-90 transition cursor-pointer">
-                &#10095;
+    <!-- 全螢幕照片放大檢視 Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4"
+         ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
+        <div class="w-full max-w-lg flex items-center justify-between mb-3 px-1">
+            <span id="lightbox-counter" class="text-xs font-mono text-zinc-400">Photo #p1</span>
+            <button type="button" onclick="closeLightbox()" class="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold hover:bg-white/20 cursor-pointer">
+                ✕ 關閉
             </button>
         </div>
 
-        <div class="max-w-md text-center px-4 mt-2" onclick="event.stopPropagation()">
-            <p id="lightbox-caption" class="text-sm text-zinc-100 leading-relaxed font-medium mb-1"></p>
-            <p class="text-[11px] text-zinc-500">💡 可點擊左右箭頭或手指左右滑動切換照片</p>
+        <div class="relative w-full max-w-lg flex items-center justify-center">
+            <button type="button" onclick="changeLightboxPhoto(-1, event)" class="absolute left-2 z-20 w-10 h-10 rounded-full bg-black/60 border border-white/15 text-white flex items-center justify-center text-lg hover:bg-black/80 active:scale-90 transition cursor-pointer">
+                ‹
+            </button>
+            <img id="lightbox-img" src="" alt="放大回憶照片" class="max-h-[68vh] w-auto max-w-full rounded-2xl shadow-2xl border border-white/15 object-contain">
+            <button type="button" onclick="changeLightboxPhoto(1, event)" class="absolute right-2 z-20 w-10 h-10 rounded-full bg-black/60 border border-white/15 text-white flex items-center justify-center text-lg hover:bg-black/80 active:scale-90 transition cursor-pointer">
+                ›
+            </button>
         </div>
+
+        <p id="lightbox-caption" class="mt-4 text-center text-sm text-zinc-200 max-w-md px-4 leading-relaxed"></p>
+        <p class="mt-2 text-[11px] text-zinc-500">（僅可左右滑動瀏覽目前已解鎖章節的照片）</p>
     </div>
 
     <script>
         const PHOTO_BASE_URL = "https://andyhhsu.github.io/for2026birthday/";
-        const STORAGE_KEY = "christine_2026_rings_state_v4";
+        const STORAGE_KEY = "christine_2026_rings_state_v10";
 
         const chaptersData = [
             {
@@ -281,46 +410,47 @@
                 icon: "✈️",
                 shortTitle: "飛行日記",
                 title: "Chapter 1｜飛行日記",
-                subtitle: "富士山下的悸動 × 韓國婚禮 × 馬祖之旅（共 29 張）",
+                subtitle: "富士山 × 東京 × 韓國聖水洞 × 馬祖大坵島（共 29 張）",
                 ringColor: "#FA114F",
                 photoRange: [1, 29],
+                highlights: [1, 6, 12, 20, 25],
                 quiz: {
-                    question: "在這個章節中，我們一起去了哪些國家／地區呢？（提示：共 3 個地方，請直接輸入名稱）",
-                    placeholder: "例如：日本 韓國 馬祖",
-                    type: "multi",
-                    requiredKeywords: ["日本", "韓國", "馬祖"],
-                    hint: "提示：有看富士山的、參加婚禮的，還有看藍眼淚的離島喔！（共3個）"
+                    question: "【第一道鎖：遺失的登機證航班代號】\n準備好飛往下一個章節了嗎？這張通關登機證的航班代號由「2 個英文字母 ＋ 2 個數字」組成（共 4 碼）：\n\n1. 前 2 碼（英文）：在韓國行中，那間讓我們「無止盡的 O…」狂逛的知名美妝店，請取它「英文店名兩個單字的字首縮寫」（2 個英文字母）。\n2. 後 2 碼（數字）：瞬間回到東京時，那間讓我們覺得「好像可以再看」的表演店名裡，藏著哪 2 個數字？\n\n請輸入這組 4 碼航班代號解鎖：",
+                    placeholder: "請輸入 2碼英文 + 2碼數字（共4碼）...",
+                    type: "exact",
+                    acceptedAnswers: ["oy63", "oliveyoung63", "olive young 63", "63oy"],
+                    hint: "【航線驗證提示】：前 2 碼請回想首爾聖水洞那條街上讓妳逛到走不動、名字裡充滿「O」的美妝天堂英文全名，取前面兩個單字的開頭字母；後 2 碼請翻閱東京那天的記憶，表演店名裡藏著的 2 位數。"
                 },
                 notes: {
-                    1: "為了一睹富士山的真面目，我們早起吹風，但看到本尊露臉的那一刻，一切都值得了！",
-                    2: "富士山的背景太美，不小心拍了太多張洗版。",
-                    3: "這張的表情太經典，絕對要放進回憶錄第一頁XD",
-                    4: "在異國街頭散步的隨手拍，光影超好看。",
-                    5: "某人肚子餓之前的眼神，跟吃飽之後完全不同。",
-                    6: "富士山河口湖美景，某人拍照拍到完全忘記趕行程！",
-                    7: "這裡的風景安靜得讓人捨不得離開。",
-                    8: "捕捉到野生觀光客一隻。",
-                    9: "這天天氣好到爆炸，怎麼拍怎麼好看。",
-                    10: "走路走到鐵腿的見證照。",
-                    11: "異國的街道總是有各種驚喜。",
-                    12: "第一次一起飛去韓國參加婚禮，看別人幸福的樣子，身邊的妳也是最美的那一個。",
-                    13: "韓國婚禮場地超夢幻，我們也來沾沾喜氣。",
-                    14: "在首爾街頭尋找美食的路上。",
-                    15: "這張笑得超燦爛，必須收藏。",
-                    16: "韓國街拍系列第一彈。",
-                    17: "戰利品滿手的一天。",
-                    18: "準備回國前的依依不捨。",
-                    19: "跨國之旅完美收官！",
-                    20: "（第20張旅遊回憶）",
-                    21: "（第21張旅遊回憶）",
-                    22: "（第22張旅遊回憶）",
-                    23: "（第23張旅遊回憶）",
-                    24: "（第24張旅遊回憶）",
-                    25: "（第25張旅遊回憶）",
-                    26: "（第26張旅遊回憶）",
-                    27: "（第27張旅遊回憶）",
-                    28: "（第28張旅遊回憶）",
-                    29: "飛行日記篇的最後一刻，記憶永遠鮮明。"
+                    1: "全世界最可怕的雲霄飛車...挑戰成功(O)!",
+                    2: "你最愛的動畫之一!",
+                    3: "不是很恐怖的戰慄迷宮～",
+                    4: "印象深刻遇到大E人外國人 還請我們喝酒",
+                    5: "忍野八海超漂亮!",
+                    6: "好像是富士山站頂樓~? 天氣超級好",
+                    7: "淺間神社爬得很值得! 但人超級多哈哈",
+                    8: "下山吃富士山大草莓",
+                    9: "富士山三角錐超Q",
+                    10: "一直被驅趕的下吉田商店街",
+                    11: "終於拍到成功的照片啦!",
+                    12: "飯店景觀台離富士山很近! 晚上騎腳踏車好玩",
+                    13: "遇到專業攝影師 還遇到台灣人搭便車",
+                    14: "河口湖天晴號 可惜天氣不太好 下次還要再去!",
+                    15: "天山上公園好冷 但很漂亮!",
+                    16: "美寶",
+                    17: "瞬間回到東京了! 63Angel好像可以再看",
+                    18: "跟朋朋一起吃完印度咖哩 來散步",
+                    19: "馬上又來到韓國啦! 無止盡的O…",
+                    20: "第一次的韓式婚禮體驗~ 東西實在不好吃哈哈",
+                    21: "很漂亮的聖水洞Dior!",
+                    22: "必拍的Joguman拍貼機",
+                    23: "逛不完的聖水洞哈哈哈",
+                    24: "拍立得照片終於洗好了",
+                    25: "馬祖的第一個拍照景點 大佛!?",
+                    26: "戰地博物館的窗邊意外好拍",
+                    27: "大邱島的路好可怕啊",
+                    28: "有點忘記是哪裡了 大坵島的上面嗎",
+                    29: "無菜單料理普普 還是懷念老酒麵線!"
                 }
             },
             {
@@ -328,27 +458,56 @@
                 icon: "🕵️‍♀️",
                 shortTitle: "解謎夥伴",
                 title: "Chapter 2｜解謎夥伴",
-                subtitle: "那些一起破關（或求救）的密室逃脫與劇本殺（共 10 張）",
+                subtitle: "那些一起破關的密室逃脫與神級機關（共 10 張）",
                 ringColor: "#FFD700",
                 photoRange: [30, 39],
+                highlights: [30, 33, 36, 39],
                 quiz: {
-                    question: "回想一下，我們第一次「兩天一夜」的密室逃脫行程，是去哪裡呢？",
-                    placeholder: "請輸入城市名稱...",
-                    type: "single",
-                    acceptedAnswers: ["台中", "臺中", "台中市", "臺中市"],
-                    hint: "提示：台灣中部、太陽餅很有名的地方！"
+                    question: "【第二道鎖：九宮格密室軌跡】\n下方是我們挑戰過的 9 座密室主題陣列。請根據本章照片下的回憶紀錄，從起點開始，用手指在九宮格上依序將這 7 座密室連起來：",
+                    customHTML: `
+                        <div class="my-3 p-3.5 rounded-2xl bg-zinc-950/90 border border-[#FFD700]/30 shadow-inner">
+                            <div class="text-[10px] font-mono text-[#FFD700] text-center mb-2 tracking-widest uppercase">❖ 3×3 ESCAPE ROOM MATRIX ❖</div>
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold text-zinc-100 mb-3">
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">送煞</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">醫怨</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">誕生</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">囚聲</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">詐屍</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">還願</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">春日齒科</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">椅子姑</div>
+                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">魅妄廟</div>
+                            </div>
+                            <ol class="text-xs text-zinc-300 space-y-1.5 text-left pl-1 leading-relaxed border-t border-white/10 pt-2.5">
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 1 (起點)：</span>「台中密室第一站!」</li>
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 2：</span>「劇情已忘哈哈 只記得懶懶NPC很厲害」</li>
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 3：</span>「機制很有趣 死了要一直重來」</li>
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 4：</span>「最後一次的邏思起子...」</li>
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 5：</span>「牙醫爸爸不要走...」</li>
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 6：</span>「遊戲兌換機制很有趣!」</li>
+                                <li><span class="text-[#FFD700] font-mono font-bold">Step 7 (終點)：</span>「目前機關第一名的密室!」</li>
+                            </ol>
+                            <p class="text-xs text-white font-bold mt-3 pt-2 border-t border-white/10 text-center">
+                                👉 請問：將這 7 座密室在九宮格上依序連起來，會畫出哪一個「英文字母」？
+                            </p>
+                        </div>
+                    `,
+                    placeholder: "請輸入畫出來的 1 個英文字母...",
+                    type: "exact",
+                    acceptedAnswers: ["c", "christine"],
+                    hint: "【軌跡連線提示】：請對照九宮格上的 9 座密室名稱與照片註解！從「台中密室第一站 (誕生)」出發，依序連到「目前機關第一名的密室 (魅妄廟)」。把這 7 個點在九宮格上用直線連起來，看看它轉折後像哪一個英文大寫字母？"
                 },
                 notes: {
-                    30: "每次進密室前都信誓旦旦說不求救，結果時間過一半就開始狂按對講機XD",
-                    31: "看妳認真盤邏輯、找兇手的表情，真的比劇本本身還要精彩！",
-                    32: "這場劇本殺我們超快就推理出來，簡直神隊友無誤。",
-                    33: "密室裡的道具做得超逼真，我們兩個還被嚇了一跳。",
-                    34: "苦思解謎中的認真側臉。",
-                    35: "拿到線索的那一刻，眼神發光！",
-                    36: "不管兇手是不是妳，反正先投妳就對了（大誤）。",
-                    37: "驚險壓線逃出密室的勝利歡呼！",
-                    38: "劇本殺角色扮演，演技大爆發。",
-                    39: "不管最後是坦蕩破關還是狼狽逃出，只要跟最佳隊友妳一組，永遠都超好玩！"
+                    30: "醫怨-劇情已忘哈哈 只記得懶懶NPC很厲害",
+                    31: "送煞-機制很有趣 死了要一直重來",
+                    32: "忘記主題了 只記得雅琪有夠怕哈哈",
+                    33: "囚聲-最後一次的邏思起子...",
+                    34: "椅子姑-遊戲兌換機制很有趣!",
+                    35: "詐屍-記得好像機關、燈光很厲害",
+                    36: "春日齒科-牙醫爸爸不要走...演員的演繹&互動印象深刻",
+                    37: "誕生-台中密室第一站!",
+                    38: "還願-幸運遇到厲害的NPC!",
+                    39: "魅妄廟-目前機關第一名的密室! 台中場地大玩起來很加分"
                 }
             },
             {
@@ -356,43 +515,44 @@
                 icon: "☕",
                 shortTitle: "日常點滴",
                 title: "Chapter 3｜日常點滴",
-                subtitle: "演唱會、看展散步與美食（共 26 張）",
+                subtitle: "紀念日、泡湯、演唱會與生活裡的小確幸（共 26 張）",
                 ringColor: "#00F5EA",
                 photoRange: [40, 65],
+                highlights: [40, 49, 51, 61, 64],
                 quiz: {
-                    question: "最後一題！在這一年裡，我們總共一起收集了幾張珍貴的回憶照片呢？",
-                    placeholder: "請輸入數字...",
-                    type: "single",
-                    acceptedAnswers: ["65", "65張", "六十五", "六十五張"],
-                    hint: "提示：看看最後一張照片編號是多少！"
+                    question: "【最終魔王題：時光保險箱】\n恭喜妳來到最後一關！這座保險箱需要輸入一組 4 位數終極密碼。\n請找出以下兩個關鍵日子的照片編號：\n• X = 某張照片的註解裡被故意打錯字（諧音錯別字）的那張照片編號\n• Y = 我們「七週年紀念日」的那張照片編號\n\n最後請解開這道專屬方程式，輸入 4 位數終極密碼：\n(X × 18) - Y + 7 = ?",
+                    placeholder: "請輸入計算後的 4 位數密碼...",
+                    type: "exact",
+                    acceptedAnswers: ["1110"],
+                    hint: "【保險箱密碼提示】：\n1. 尋找 X：這 65 張照片裡，有一張照片的註解被故意打錯字了，找出那張照片的編號（X=64）。\n2. 尋找 Y：找出我們慶祝「七週年紀念日」的那張照片編號（Y=49）。\n3. 代入公式計算：(64 × 18) - 49 + 7 就是妳的生日數字！"
                 },
                 notes: {
-                    40: "燈光暗下來、前奏響起的那一秒，氣氛直接嗨到最高點！",
-                    41: "演唱會現場超嗨，嗓子直接喊到明天見。",
-                    42: "動靜皆宜的我們，除了在演唱會嗨翻，也能安安靜靜一起逛展覽。",
-                    43: "手裡拿著爆米花跟票根，跟妳看過的每一場電影，都是最棒的約會。",
-                    44: "這一年我們到底吃了多少好料？幸福肥就是這樣來的！",
-                    45: "手機相簿裡有一半都是這種奇奇怪怪的怪表情合輯哈哈。",
-                    46: "日常散步的小確幸。",
-                    47: "發現神仙咖啡廳，心情跟著晴朗起來。",
-                    48: "週末的文青藝文行程。",
-                    49: "看展看到肚子餓的兩人。",
-                    50: "拍照技術有在進步，給自己拍拍手。",
-                    51: "美食當前，減肥永遠是明天的事。",
-                    52: "捕捉到野生可愛的妳。",
-                    53: "夕陽下的剪影，浪漫滿分。",
-                    54: "一起解鎖新的打卡景點。",
-                    55: "偶爾也有這種慵懶不想動的午後。",
-                    56: "生活不需要太盛大，有妳陪伴的日常就很閃亮。",
-                    57: "笑得眼睛都瞇起來了。",
-                    58: "這家店的甜點真的太強，必須記錄。",
-                    59: "街頭隨手拍，每一張都是回憶。",
-                    60: "慶祝某個平凡卻開心的日子。",
-                    61: "手牽手走過好多的春夏秋冬。",
-                    62: "相機記錄下我們最自然的互動。",
-                    63: "有妳在身邊，哪裡都是晴天。",
-                    64: "倒數第二張照片，代表我們的故事越發精采。",
-                    65: "第 65 張照片，我們的 2025-2026 回憶光環，完美圓滿！"
+                    40: "去年的生日餐! 覺得前幾名好吃的牛排店",
+                    41: "去年的生日餐!",
+                    42: "😂😂😂",
+                    43: "等超久的路邊西班牙料理😂",
+                    44: "美寶",
+                    45: "情人節❤️",
+                    46: "居家日常",
+                    47: "後半段變搞笑片的克寧奶粉",
+                    48: "你最愛的柯南❤️",
+                    49: "七週年紀念日❤️我們已經再一起這摸久啦!",
+                    50: "每出必看的玩總~",
+                    51: "來麗禧泡湯度假啦!",
+                    52: "晚餐意外解鎖一間米其林",
+                    53: "北投溫泉館的小遊戲都很有趣! 推球每次都差一個!",
+                    54: "好像是吸鐵釣魚 很簡單",
+                    55: "溫泉浴場也很出片",
+                    56: "拍立得系列-還記得這裡是哪裡嗎哈哈",
+                    57: "每次到遊樂場都必玩的空氣曲棍球",
+                    58: "辣美寶❤️ 泳池不大但還好人也不多",
+                    59: "去年的生日餐 今年也要繼續用拍立得記錄生活!",
+                    60: "第一次的匹克球零打~ 之後也要多打餒",
+                    61: "IVE演唱會初體驗 已經得到前排病了",
+                    62: "台灣感性",
+                    63: "恐怖心展",
+                    64: "實實入手tiffany啦!",
+                    65: "喜歡一起運動❤️"
                 }
             }
         ];
@@ -406,6 +566,7 @@
         let melodyIdx = 0;
 
         function initAudio() {
+            if (typeof Tone === 'undefined') return;
             if (Tone.context.state !== 'running') Tone.start();
             if (!synth) {
                 synth = new Tone.PolySynth(Tone.Synth, {
@@ -418,6 +579,7 @@
 
         function toggleBGM() {
             try {
+                if (typeof Tone === 'undefined') return;
                 initAudio();
                 const btn = document.getElementById('bgm-btn');
                 if (!isBgmPlaying) {
@@ -439,26 +601,39 @@
                     Tone.Transport.start();
                     bgmLoop.start(0);
                     isBgmPlaying = true;
-                    btn.textContent = "🎵";
-                    btn.classList.add("border-[#FFD700]", "text-white");
+                    if (btn) {
+                        btn.textContent = "🎵";
+                        btn.classList.add("border-[#FFD700]", "text-white");
+                    }
                 } else {
                     if (bgmLoop) bgmLoop.stop();
                     isBgmPlaying = false;
-                    btn.textContent = "🔇";
-                    btn.classList.remove("border-[#FFD700]", "text-white");
+                    if (btn) {
+                        btn.textContent = "🔇";
+                        btn.classList.remove("border-[#FFD700]", "text-white");
+                    }
                 }
             } catch (e) {}
         }
 
         function playSound(type) {
             try {
+                if (typeof Tone === 'undefined') return;
                 initAudio();
+                if (!synth) return;
                 if (type === 'step') {
                     synth.triggerAttackRelease(["E5", "A5"], "16n");
+                } else if (type === 'like') {
+                    synth.triggerAttackRelease(["G5", "C6"], "32n");
                 } else if (type === 'error') {
                     synth.triggerAttackRelease(["C3", "F#3"], "8n");
                 } else if (type === 'heartbeat') {
                     synth.triggerAttackRelease("C2", "32n");
+                } else if (type === 'wish') {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("G5", "8n", now);
+                    synth.triggerAttackRelease("B5", "8n", now + 0.1);
+                    synth.triggerAttackRelease("D6", "4n", now + 0.2);
                 } else if (type === 'complete') {
                     const now = Tone.now();
                     synth.triggerAttackRelease("C5", "8n", now);
@@ -471,13 +646,51 @@
 
         let currentChapterIndex = 0;
         let unlockedChapters = new Set();
+        let likedPhotos = new Set();
+        let isCandleBlown = false;
         let isGiftRevealed = false;
+        let lockToastTimer = null;
+
+        function isChapterAccessible(index) {
+            if (index === 0) return true;
+            return unlockedChapters.has(index - 1);
+        }
+
+        function trySelectChapter(index) {
+            if (!isChapterAccessible(index)) {
+                playSound('error');
+                const tabBtn = document.getElementById(`tab-btn-${index}`);
+                if (tabBtn) {
+                    tabBtn.classList.remove('animate-shake');
+                    void tabBtn.offsetWidth;
+                    tabBtn.classList.add('animate-shake');
+                }
+                showLockToast(`🔒 尚未解鎖！請先完成「Chapter ${index}：${chaptersData[index - 1].shortTitle}」的問答考驗喔！`);
+                return;
+            }
+            playSound('step');
+            loadChapter(index);
+        }
+
+        function showLockToast(msg) {
+            const toast = document.getElementById('lock-toast');
+            const textEl = document.getElementById('lock-toast-text');
+            if (!toast || !textEl) return;
+            textEl.textContent = msg;
+            toast.classList.remove('hidden');
+            clearTimeout(lockToastTimer);
+            lockToastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2600);
+        }
 
         function saveProgress() {
             try {
                 const data = {
                     currentChapterIndex,
                     unlocked: Array.from(unlockedChapters),
+                    liked: Array.from(likedPhotos),
+                    isCandleBlown,
                     isGiftRevealed
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -489,10 +702,14 @@
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (!raw) return false;
                 const data = JSON.parse(raw);
-                if (Array.isArray(data.unlocked)) {
-                    unlockedChapters = new Set(data.unlocked);
+                if (Array.isArray(data.unlocked)) unlockedChapters = new Set(data.unlocked);
+                if (Array.isArray(data.liked)) likedPhotos = new Set(data.liked);
+                let savedIdx = typeof data.currentChapterIndex === 'number' ? data.currentChapterIndex : 0;
+                if (!isChapterAccessible(savedIdx)) {
+                    savedIdx = unlockedChapters.size;
                 }
-                currentChapterIndex = typeof data.currentChapterIndex === 'number' ? data.currentChapterIndex : 0;
+                currentChapterIndex = Math.min(savedIdx, chaptersData.length - 1);
+                isCandleBlown = !!data.isCandleBlown;
                 isGiftRevealed = !!data.isGiftRevealed;
                 return unlockedChapters.size > 0 || currentChapterIndex > 0;
             } catch (e) {
@@ -503,12 +720,21 @@
         function resetAllProgress() {
             localStorage.removeItem(STORAGE_KEY);
             unlockedChapters.clear();
+            likedPhotos.clear();
             currentChapterIndex = 0;
+            isCandleBlown = false;
             isGiftRevealed = false;
             updateRingsProgress();
-            document.getElementById('finale-section').classList.add('hidden');
+
+            const flameEl = document.getElementById('candle-flame-el');
+            const smokeEl = document.getElementById('candle-smoke-el');
+            if (flameEl) flameEl.classList.remove('hidden');
+            if (smokeEl) smokeEl.classList.add('hidden');
+            document.getElementById('candle-wish-box').classList.remove('hidden');
+            document.getElementById('final-action-box').classList.add('hidden');
             document.getElementById('option-a-reveal').classList.add('hidden');
-            document.getElementById('final-action-box').classList.remove('hidden');
+
+            document.getElementById('finale-section').classList.add('hidden');
             document.getElementById('chapter-tabs').classList.add('hidden');
             document.getElementById('chapter-container').classList.add('hidden');
             document.getElementById('floating-nav').classList.add('hidden');
@@ -529,6 +755,13 @@
             return `https://placehold.co/600x750/${colorPair}?text=${text}`;
         }
 
+        function handleImgLoad(imgEl) {
+            imgEl.classList.add('loaded');
+            if (imgEl.parentElement) {
+                imgEl.parentElement.classList.remove('skeleton-box');
+            }
+        }
+
         function handleImgError(imgEl, num) {
             let extIdx = parseInt(imgEl.dataset.extIdx || "0", 10) + 1;
             if (extIdx < EXTENSIONS.length) {
@@ -537,6 +770,10 @@
             } else {
                 imgEl.onerror = null;
                 imgEl.src = getPlaceholderUrl(num);
+                imgEl.classList.add('loaded');
+                if (imgEl.parentElement) {
+                    imgEl.parentElement.classList.remove('skeleton-box');
+                }
             }
         }
 
@@ -564,16 +801,24 @@
             tabsEl.innerHTML = chaptersData.map((ch, idx) => {
                 const isActive = idx === currentChapterIndex && document.getElementById('finale-section').classList.contains('hidden');
                 const isDone = unlockedChapters.has(idx);
+                const isAccessible = isChapterAccessible(idx);
+
+                let statusIcon = ch.icon;
+                if (isDone) statusIcon = '✅';
+                else if (!isAccessible) statusIcon = '🔒';
+
                 return `
-                    <button onclick="loadChapter(${idx})" class="py-2.5 px-2 rounded-2xl text-xs font-bold transition flex flex-col items-center gap-1 border cursor-pointer ${
+                    <button id="tab-btn-${idx}" type="button" onclick="trySelectChapter(${idx})" class="py-2.5 px-2 rounded-2xl text-xs font-bold transition flex flex-col items-center gap-1 border cursor-pointer ${
                         isActive 
                             ? 'bg-white text-black border-white shadow-lg' 
                             : isDone 
                                 ? 'bg-zinc-900/90 text-zinc-200 border-[#FFD700]/50' 
-                                : 'bg-zinc-900/40 text-zinc-500 border-white/5'
+                                : isAccessible
+                                    ? 'bg-zinc-900/70 text-zinc-300 border-white/15'
+                                    : 'bg-zinc-950/60 text-zinc-600 border-white/5 opacity-65'
                     }">
-                        <span class="text-base">${isDone ? '✅' : ch.icon}</span>
-                        <span>${ch.shortTitle}</span>
+                        <span class="text-base">${statusIcon}</span>
+                        <span>${isAccessible ? ch.shortTitle : '鎖定中'}</span>
                     </button>
                 `;
             }).join('');
@@ -582,16 +827,75 @@
         function updateRingsProgress() {
             const completedCount = unlockedChapters.size;
             const percent = Math.min(100, Math.round((completedCount / chaptersData.length) * 100));
-            
-            document.getElementById('progress-text').textContent = `${percent}%`;
+            const progressText = document.getElementById('progress-text');
+            if (progressText) progressText.textContent = `${percent}%`;
+            const starPath = document.getElementById('nav-star-path');
+            if (starPath) {
+                const maxDash = 260;
+                starPath.style.strokeDashoffset = maxDash - (maxDash * percent / 100);
+            }
+        }
 
-            const max1 = 264, max2 = 195, max3 = 126;
-            document.getElementById('nav-ring-1').style.strokeDashoffset = max1 - (max1 * percent / 100);
-            document.getElementById('nav-ring-2').style.strokeDashoffset = max2 - (max2 * percent / 100);
-            document.getElementById('nav-ring-3').style.strokeDashoffset = max3 - (max3 * percent / 100);
+        function togglePhotoLike(num, event, containerEl) {
+            if (event) event.stopPropagation();
+            playSound('like');
+
+            if (likedPhotos.has(num)) {
+                likedPhotos.delete(num);
+            } else {
+                likedPhotos.add(num);
+            }
+            saveProgress();
+
+            document.querySelectorAll(`.like-btn-${num}`).forEach(btn => {
+                const isLiked = likedPhotos.has(num);
+                btn.innerHTML = isLiked ? '❤️' : '🤍';
+                btn.classList.toggle('scale-110', isLiked);
+            });
+
+            if (containerEl) {
+                const heart = document.createElement('div');
+                heart.className = 'pop-heart';
+                heart.innerHTML = '💖';
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                containerEl.appendChild(heart);
+                setTimeout(() => heart.remove(), 850);
+            }
+        }
+
+        let lastTapTime = 0;
+        let singleTapTimer = null;
+
+        function handlePhotoCardTap(num, containerEl, event) {
+            const now = Date.now();
+            const timeDiff = now - lastTapTime;
+
+            if (timeDiff < 280 && timeDiff > 0) {
+                clearTimeout(singleTapTimer);
+                if (!likedPhotos.has(num)) {
+                    togglePhotoLike(num, event, containerEl);
+                } else {
+                    playSound('like');
+                    const heart = document.createElement('div');
+                    heart.className = 'pop-heart';
+                    heart.innerHTML = '💖';
+                    heart.style.left = '50%';
+                    heart.style.top = '50%';
+                    containerEl.appendChild(heart);
+                    setTimeout(() => heart.remove(), 850);
+                }
+                lastTapTime = 0;
+            } else {
+                lastTapTime = now;
+                singleTapTimer = setTimeout(() => {
+                    openLightboxByNum(num);
+                }, 260);
+            }
         }
 
         function loadChapter(index) {
+            if (!isChapterAccessible(index)) return;
             currentChapterIndex = index;
             saveProgress();
             const ch = chaptersData[index];
@@ -603,25 +907,64 @@
 
             renderTabs();
 
-            let galleryItemsHTML = '';
+            const highlights = ch.highlights || [];
+            let polaroidHTML = '';
+            highlights.forEach((num, idx) => {
+                const imgUrl = getPhotoUrl(num, 0);
+                const noteText = ch.notes[num] || `我們的珍貴瞬間 #${num}`;
+                const tiltClass = idx % 2 === 0 ? '-rotate-1' : 'rotate-1';
+                const isLiked = likedPhotos.has(num);
+
+                polaroidHTML += `
+                    <div class="polaroid-card ${tiltClass}">
+                        <div class="polaroid-tape"></div>
+                        <div class="relative rounded-xl overflow-hidden bg-zinc-900/90 skeleton-box aspect-[4/5] flex items-center justify-center cursor-pointer"
+                             onclick="handlePhotoCardTap(${num}, this, event)">
+                            <img id="gallery-img-${num}" src="${imgUrl}" alt="Photo ${num}" loading="lazy" data-ext-idx="0"
+                                 class="img-fade w-full h-full object-contain"
+                                 onload="handleImgLoad(this)"
+                                 onerror="handleImgError(this, ${num})">
+                            <div class="absolute top-2.5 left-2.5 bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px] font-mono text-[#FFD700] border border-[#FFD700]/30">
+                                ★ 精選 #p${num}
+                            </div>
+                            <button type="button" onclick="togglePhotoLike(${num}, event, this.parentElement)" 
+                                    class="like-btn-${num} absolute bottom-2.5 right-2.5 w-8 h-8 rounded-full bg-black/65 backdrop-blur-md border border-white/15 flex items-center justify-center text-sm transition cursor-pointer">
+                                ${isLiked ? '❤️' : '🤍'}
+                            </button>
+                        </div>
+                        <div class="pt-3 px-1">
+                            <p class="text-zinc-100 text-xs sm:text-sm leading-relaxed font-medium">
+                                “${noteText}”
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            let magazineHTML = '';
             for (let num = ch.photoRange[0]; num <= ch.photoRange[1]; num++) {
                 const imgUrl = getPhotoUrl(num, 0);
                 const noteText = ch.notes[num] || `我們的珍貴瞬間 #${num}`;
-                
-                galleryItemsHTML += `
-                    <div class="glass-card rounded-3xl overflow-hidden border border-white/10 shadow-xl mb-5">
-                        <div class="adaptive-photo-box p-2 sm:p-3 cursor-pointer" onclick="openLightboxByNum(${num})">
-                            <img id="gallery-img-${num}" src="${imgUrl}" alt="Photo ${num}" loading="lazy" data-ext-idx="0"
+                const isLiked = likedPhotos.has(num);
+
+                magazineHTML += `
+                    <div class="magazine-item">
+                        <div class="relative bg-zinc-900/90 skeleton-box min-h-[160px] flex items-center justify-center cursor-pointer p-1.5"
+                             onclick="handlePhotoCardTap(${num}, this, event)">
+                            <img id="masonry-img-${num}" src="${imgUrl}" alt="Photo ${num}" loading="lazy" data-ext-idx="0"
+                                 class="img-fade w-full h-auto rounded-xl object-contain max-h-[300px]"
+                                 onload="handleImgLoad(this)"
                                  onerror="handleImgError(this, ${num})">
-                            <div class="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white border border-white/15">
+                            <div class="absolute top-2.5 left-2.5 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-mono text-zinc-200 border border-white/10">
                                 #p${num}
                             </div>
-                            <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] text-zinc-300 border border-white/10">
-                                🔍 點擊放大
-                            </div>
+                            <button type="button" onclick="togglePhotoLike(${num}, event, this.parentElement)" 
+                                    class="like-btn-${num} absolute bottom-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center text-xs transition cursor-pointer">
+                                ${isLiked ? '❤️' : '🤍'}
+                            </button>
                         </div>
-                        <div class="p-4 border-t border-white/5 bg-zinc-900/40">
-                            <p class="text-zinc-100 text-sm leading-relaxed font-medium">
+                        <div class="p-3 border-t border-white/5 bg-zinc-900/40">
+                            <p class="text-zinc-200 text-xs leading-relaxed">
                                 “${noteText}”
                             </p>
                         </div>
@@ -631,7 +974,7 @@
 
             const isLastChapter = index === chaptersData.length - 1;
             const nextBtnText = isLastChapter 
-                ? "✨ 驗證答案，合攏 100% 光環！" 
+                ? "✨ 驗證答案，完成 100% 記憶拼圖！" 
                 : `🔓 驗證答案，解鎖 Chapter ${index + 2} ➔`;
 
             const container = document.getElementById('chapter-container');
@@ -639,29 +982,42 @@
                 <div class="glass-card rounded-3xl p-6 border-l-4" style="border-left-color: ${ch.ringColor}">
                     <div class="flex items-center justify-between mb-1">
                         <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">${ch.icon} MEMORY CHAPTER 0${ch.id}</span>
-                        ${unlockedChapters.size === chaptersData.length ? `<button onclick="showFinale()" class="text-xs font-bold text-[#FFD700] underline cursor-pointer">直達最終驚喜 ➔</button>` : ''}
+                        ${unlockedChapters.size === chaptersData.length ? `<button type="button" onclick="showFinale()" class="text-xs font-bold text-[#FFD700] underline cursor-pointer">直達最終驚喜 ➔</button>` : ''}
                     </div>
                     <h2 class="text-2xl font-black text-white mb-1">${ch.title}</h2>
                     <p class="text-xs text-zinc-300">${ch.subtitle}</p>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-2">
                     <div class="flex items-center justify-between px-1">
-                        <h3 class="text-sm font-bold text-zinc-300 flex items-center gap-1.5">
-                            <span>🎞️</span> 本章完整回憶相簿 (${ch.photoRange[1] - ch.photoRange[0] + 1}張)
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-[#FFD700] flex items-center gap-1.5">
+                            <span>📸</span> 本章精選拍立得 (左右滑動翻閱)
                         </h3>
-                        <span class="text-xs text-zinc-400">點照片可全螢幕滑動連看</span>
+                        <span class="text-[11px] text-zinc-400">單擊放大 • 雙擊愛心</span>
                     </div>
-                    ${galleryItemsHTML}
+                    <div class="polaroid-scroll">
+                        ${polaroidHTML}
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between px-1">
+                        <h3 class="text-sm font-bold text-zinc-200 flex items-center gap-1.5">
+                            <span>🎞️</span> 完整時光雜誌牆 (共 ${ch.photoRange[1] - ch.photoRange[0] + 1} 張)
+                        </h3>
+                        <span class="text-[11px] text-zinc-400">點選任意照片可全螢幕連看</span>
+                    </div>
+                    <div class="magazine-grid">
+                        ${magazineHTML}
+                    </div>
                 </div>
 
                 <div id="quiz-card" class="glass-card rounded-3xl p-6 border border-white/15 shadow-2xl space-y-4">
                     <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style="color: ${ch.ringColor}">
-                        <span>🔐 CHAPTER 0${ch.id} 回憶解鎖問答</span>
+                        <span>🔐 CHAPTER 0${ch.id} 記憶解鎖考驗</span>
                     </div>
-                    <p class="text-white font-bold text-base leading-relaxed">
-                        Q：${ch.quiz.question}
-                    </p>
+                    <p class="text-white font-bold text-sm sm:text-base leading-relaxed whitespace-pre-line">${ch.quiz.question}</p>
+                    ${ch.quiz.customHTML || ''}
                     <div>
                         <input id="quiz-input" type="text" placeholder="${ch.quiz.placeholder}" 
                                value="${isAlreadyUnlocked ? '✅ 已成功解鎖本章' : ''}"
@@ -669,7 +1025,7 @@
                                class="w-full px-4 py-3.5 rounded-2xl bg-zinc-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-white transition">
                         <p id="quiz-feedback" class="text-xs mt-2 hidden"></p>
                     </div>
-                    <button onclick="verifyChapterQuiz(${index})" class="w-full py-4 rounded-2xl bg-white text-black font-black text-base shadow-xl hover:bg-zinc-200 active:scale-98 transition transform cursor-pointer">
+                    <button type="button" onclick="verifyChapterQuiz(${index})" class="w-full py-4 rounded-2xl bg-white text-black font-black text-base shadow-xl hover:bg-zinc-200 active:scale-95 transition transform cursor-pointer">
                         ${nextBtnText}
                     </button>
                 </div>
@@ -682,46 +1038,50 @@
             const quizEl = document.getElementById('quiz-card');
             if (quizEl) {
                 quizEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    const inputEl = document.getElementById('quiz-input');
+                    if (inputEl && !unlockedChapters.has(currentChapterIndex)) inputEl.focus();
+                }, 500);
             }
         }
 
         function verifyChapterQuiz(index) {
-            const ch = chaptersData[index];
-            const inputEl = document.getElementById('quiz-input');
-            const feedbackEl = document.getElementById('quiz-feedback');
-            const quizCardEl = document.getElementById('quiz-card');
-            const rawInput = (inputEl.value || "").trim();
-
-            if (unlockedChapters.has(index) && rawInput.includes('已成功解鎖')) {
+            if (unlockedChapters.has(index)) {
                 proceedNext(index);
                 return;
             }
 
-            let isCorrect = false;
-            const normalized = rawInput.replace(/臺/g, '台').toLowerCase();
+            const ch = chaptersData[index];
+            const inputEl = document.getElementById('quiz-input');
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const rawVal = (inputEl.value || "").trim();
+            const normalizedVal = rawVal.replace(/\s+/g, "").replace(/臺/g, "台").toLowerCase();
 
-            if (ch.quiz.type === 'multi') {
-                isCorrect = ch.quiz.requiredKeywords.every(kw => normalized.includes(kw));
+            let isCorrect = false;
+            if (ch.quiz.type === "exact") {
+                isCorrect = ch.quiz.acceptedAnswers.some(ans => normalizedVal === ans.replace(/\s+/g, "").toLowerCase());
             } else {
-                isCorrect = ch.quiz.acceptedAnswers.some(ans => 
-                    normalized === ans.replace(/臺/g, '台').toLowerCase() || 
-                    normalized.includes(ans.replace(/臺/g, '台').toLowerCase())
-                );
+                isCorrect = ch.quiz.acceptedAnswers.some(ans => normalizedVal.includes(ans.toLowerCase()));
             }
 
             if (isCorrect) {
-                feedbackEl.classList.remove('hidden', 'text-[#FA114F]');
-                feedbackEl.classList.add('text-[#00F5EA]');
-                feedbackEl.textContent = "🎉 答對了！光環能量解鎖中...";
-                setTimeout(() => proceedNext(index), 450);
+                feedbackEl.textContent = "🎉 破解成功！下一章節的記憶大門已開啟！";
+                feedbackEl.className = "text-xs mt-2 text-emerald-400 font-bold block";
+                inputEl.classList.remove("border-rose-500");
+                inputEl.classList.add("border-emerald-400");
+                setTimeout(() => {
+                    proceedNext(index);
+                }, 400);
             } else {
                 playSound('error');
-                quizCardEl.classList.remove('animate-shake');
-                void quizCardEl.offsetWidth;
-                quizCardEl.classList.add('animate-shake');
-                feedbackEl.classList.remove('hidden', 'text-[#00F5EA]');
-                feedbackEl.classList.add('text-[#FA114F]');
-                feedbackEl.textContent = `❌ 答案還差一點點喔！${ch.quiz.hint}`;
+                const quizCard = document.getElementById('quiz-card');
+                quizCard.classList.remove('animate-shake');
+                void quizCard.offsetWidth;
+                quizCard.classList.add('animate-shake');
+
+                feedbackEl.textContent = `❌ 答案不正確喔！\n💡 ${ch.quiz.hint}`;
+                feedbackEl.className = "text-xs mt-2 text-rose-400 font-medium whitespace-pre-line block";
+                inputEl.classList.add("border-rose-500");
             }
         }
 
@@ -731,107 +1091,193 @@
             updateRingsProgress();
             renderTabs();
 
+            const modal = document.getElementById('chapter-transition-modal');
+            const iconEl = document.getElementById('trans-icon');
+            const subEl = document.getElementById('trans-sub');
+            const titleEl = document.getElementById('trans-title');
+            const descEl = document.getElementById('trans-desc');
+
             if (unlockedChapters.size === chaptersData.length) {
-                showFinale();
+                playSound('complete');
+                iconEl.textContent = "🎉";
+                subEl.textContent = "ALL CHAPTERS COMPLETED • 100%";
+                titleEl.textContent = "65 張記憶拼圖完美合攏！";
+                descEl.textContent = "正在為妳點亮生日許願燭火...";
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    showFinale();
+                }, 1500);
             } else {
                 playSound('step');
-                loadChapter(index + 1);
+                const nextCh = chaptersData[index + 1];
+                iconEl.textContent = nextCh.icon;
+                subEl.textContent = `CHAPTER 0${index + 2} UNLOCKED`;
+                titleEl.textContent = `${chaptersData[index].shortTitle} 記憶已珍藏`;
+                descEl.textContent = `正在翻開下一章：${nextCh.title}...`;
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    loadChapter(index + 1);
+                }, 1400);
             }
         }
 
         function showFinale() {
-            playSound('complete');
             document.getElementById('chapter-container').classList.add('hidden');
             document.getElementById('floating-nav').classList.add('hidden');
             document.getElementById('finale-section').classList.remove('hidden');
             renderTabs();
 
             if (isGiftRevealed) {
+                document.getElementById('candle-wish-box').classList.add('hidden');
                 document.getElementById('final-action-box').classList.add('hidden');
                 document.getElementById('option-a-reveal').classList.remove('hidden');
+            } else if (isCandleBlown) {
+                document.getElementById('candle-wish-box').classList.add('hidden');
+                document.getElementById('final-action-box').classList.remove('hidden');
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function blowOutCandle() {
+            if (isCandleBlown) return;
+            isCandleBlown = true;
+            saveProgress();
+            playSound('wish');
+
+            const flameEl = document.getElementById('candle-flame-el');
+            const smokeEl = document.getElementById('candle-smoke-el');
+            const instEl = document.getElementById('candle-instruction');
+
+            if (flameEl) flameEl.classList.add('hidden');
+            if (smokeEl) {
+                smokeEl.classList.remove('hidden');
+                smokeEl.classList.add('candle-smoke');
+            }
+            if (instEl) {
+                instEl.innerHTML = `<span class="text-[#FFD700] font-bold">✨ 生日願望已送達星空！</span>`;
+            }
+
+            try {
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 45,
+                        spread: 60,
+                        origin: { y: 0.7 },
+                        colors: ['#FFD700', '#FFF8E7', '#FA114F']
+                    });
+                }
+            } catch (e) {}
+
+            setTimeout(() => {
+                document.getElementById('candle-wish-box').classList.add('hidden');
+                document.getElementById('final-action-box').classList.remove('hidden');
+            }, 1200);
         }
 
         let holdInterval = null;
         let holdProgress = 0;
 
-        function startHeartScan(e) {
-            if (e && e.cancelable) e.preventDefault();
-            if (holdInterval || isGiftRevealed) return;
+        function startHeartScan(event) {
+            if (event && event.type === 'touchstart') event.preventDefault();
+            if (isGiftRevealed || holdInterval) return;
 
-            initAudio();
-            const ringEl = document.getElementById('hold-progress-ring');
             const statusEl = document.getElementById('sensor-status');
-            const circumference = 276.5;
+            const ringEl = document.getElementById('hold-progress-ring');
+            const totalDash = 276.5;
 
-            statusEl.textContent = "🎁 正在將我們一整年的心意與回憶存放在一起... 請保持按住！";
-            statusEl.className = "text-xs text-[#00F5EA] font-bold mb-4 tracking-wide animate-pulse";
+            holdProgress = 0;
+            playSound('heartbeat');
 
-            let tickCount = 0;
             holdInterval = setInterval(() => {
-                holdProgress += 2;
-                tickCount++;
+                holdProgress += 4;
+                const offset = totalDash - (totalDash * Math.min(100, holdProgress) / 100);
+                if (ringEl) ringEl.style.strokeDashoffset = offset;
 
-                const offset = circumference - (circumference * Math.min(100, holdProgress) / 100);
-                ringEl.style.strokeDashoffset = offset;
-
-                if (tickCount % 5 === 0) {
+                if (holdProgress % 20 === 0 && holdProgress < 100) {
                     playSound('heartbeat');
+                }
+                if (statusEl) {
+                    statusEl.textContent = `✨ 正在開啟專屬驚喜... ${Math.min(100, holdProgress)}%`;
                 }
 
                 if (holdProgress >= 100) {
                     clearInterval(holdInterval);
                     holdInterval = null;
-                    completeHeartScan();
+                    completeGiftReveal();
                 }
-            }, 60);
+            }, 100);
         }
 
-        function cancelHeartScan(e) {
-            if (!holdInterval || isGiftRevealed) return;
-            clearInterval(holdInterval);
-            holdInterval = null;
+        function cancelHeartScan(event) {
+            if (isGiftRevealed) return;
+            if (holdInterval) {
+                clearInterval(holdInterval);
+                holdInterval = null;
+            }
             holdProgress = 0;
-
-            document.getElementById('hold-progress-ring').style.strokeDashoffset = 276.5;
+            const ringEl = document.getElementById('hold-progress-ring');
             const statusEl = document.getElementById('sensor-status');
-            statusEl.textContent = "⚠️ 過程不小心放開了，請重新「長按」禮物 3 秒喔！";
-            statusEl.className = "text-xs text-[#FA114F] font-bold mb-4 tracking-wide";
+            if (ringEl) ringEl.style.strokeDashoffset = 276.5;
+            if (statusEl) {
+                statusEl.textContent = "👇 請持續「長按」下方禮物 3 秒不要放開喔！";
+            }
         }
 
-        function completeHeartScan() {
+        function completeGiftReveal() {
             isGiftRevealed = true;
             saveProgress();
             playSound('complete');
 
             try {
-                confetti({
-                    particleCount: 90,
-                    spread: 75,
-                    origin: { y: 0.6 },
-                    colors: ['#FA114F', '#00F5EA', '#FFD700', '#FFFFFF']
-                });
+                if (typeof confetti === 'function') {
+                    confetti({
+                        particleCount: 90,
+                        spread: 75,
+                        origin: { y: 0.6 },
+                        colors: ['#FA114F', '#FFD700', '#00F5EA', '#FFFFFF']
+                    });
+                }
             } catch (e) {}
 
             document.getElementById('final-action-box').classList.add('hidden');
-            document.getElementById('option-a-reveal').classList.remove('hidden');
+            const revealEl = document.getElementById('option-a-reveal');
+            revealEl.classList.remove('hidden');
+            revealEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         let currentLightboxNum = 1;
         let touchStartX = 0;
 
+        function getMaxAccessiblePhotoNum() {
+            if (unlockedChapters.has(1)) return 65;
+            if (unlockedChapters.has(0)) return 39;
+            return 29;
+        }
+
         function openLightboxByNum(num) {
             currentLightboxNum = num;
             updateLightboxContent();
-            document.getElementById('lightbox-modal').classList.remove('hidden');
+            document.getElementById('lightbox').classList.remove('hidden');
+        }
+
+        function changeLightboxPhoto(delta, event) {
+            if (event) event.stopPropagation();
+            const maxPhoto = getMaxAccessiblePhotoNum();
+            currentLightboxNum += delta;
+            if (currentLightboxNum < 1) currentLightboxNum = maxPhoto;
+            if (currentLightboxNum > maxPhoto) currentLightboxNum = 1;
+            playSound('step');
+            updateLightboxContent();
         }
 
         function updateLightboxContent() {
             const imgEl = document.getElementById('lightbox-img');
             const capEl = document.getElementById('lightbox-caption');
             const counterEl = document.getElementById('lightbox-counter');
-            const pageImg = document.getElementById(`gallery-img-${currentLightboxNum}`);
+            const pageImg = document.getElementById(`masonry-img-${currentLightboxNum}`) || document.getElementById(`gallery-img-${currentLightboxNum}`);
+            const maxPhoto = getMaxAccessiblePhotoNum();
 
             const noteText = getNoteByPhotoNum(currentLightboxNum);
             const fallbackUrl = getPlaceholderUrl(currentLightboxNum);
@@ -842,47 +1288,81 @@
             };
             imgEl.src = pageImg ? pageImg.src : getPhotoUrl(currentLightboxNum, 0);
             capEl.textContent = `“${noteText}”`;
-            counterEl.textContent = `Photo #p${currentLightboxNum} / 65`;
+            counterEl.textContent = `Photo #p${currentLightboxNum} / 已解鎖上限 #p${maxPhoto}`;
         }
 
-        function navigateLightbox(direction) {
-            currentLightboxNum += direction;
-            if (currentLightboxNum < 1) currentLightboxNum = 65;
-            if (currentLightboxNum > 65) currentLightboxNum = 1;
-            updateLightboxContent();
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
         }
 
         function handleTouchStart(e) {
-            if (e.changedTouches && e.changedTouches.length > 0) {
-                touchStartX = e.changedTouches[0].screenX;
+            if (e.touches && e.touches.length > 0) {
+                touchStartX = e.touches[0].clientX;
             }
         }
 
         function handleTouchEnd(e) {
-            if (e.changedTouches && e.changedTouches.length > 0) {
-                const touchEndX = e.changedTouches[0].screenX;
-                const diff = touchEndX - touchStartX;
-                if (Math.abs(diff) > 45) {
-                    if (diff < 0) navigateLightbox(1);
-                    else navigateLightbox(-1);
+            if (!e.changedTouches || e.changedTouches.length === 0) return;
+            const diffX = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(diffX) > 45) {
+                if (diffX > 0) {
+                    changeLightboxPhoto(-1);
+                } else {
+                    changeLightboxPhoto(1);
                 }
             }
         }
 
-        function closeLightbox() {
-            document.getElementById('lightbox-modal').classList.add('hidden');
+        function initGoldDustCanvas() {
+            const canvas = document.getElementById('gold-dust-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            for (let i = 0; i < 38; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 1.8 + 0.6,
+                    vx: (Math.random() - 0.5) * 0.25,
+                    vy: -Math.random() * 0.35 - 0.1,
+                    alpha: Math.random() * 0.65 + 0.15,
+                    dAlpha: (Math.random() - 0.5) * 0.008,
+                    color: i % 3 === 0 ? '250, 17, 79' : '255, 215, 0'
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                for (const p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha += p.dAlpha;
+                    if (p.alpha <= 0.1 || p.alpha >= 0.8) p.dAlpha *= -1;
+                    if (p.y < -10) p.y = height + 10;
+                    if (p.x < -10) p.x = width + 10;
+                    if (p.x > width + 10) p.x = -10;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+                    ctx.fill();
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
         }
 
-        window.addEventListener('keydown', (e) => {
-            const modal = document.getElementById('lightbox-modal');
-            if (!modal.classList.contains('hidden')) {
-                if (e.key === 'ArrowLeft') navigateLightbox(-1);
-                if (e.key === 'ArrowRight') navigateLightbox(1);
-                if (e.key === 'Escape') closeLightbox();
-            }
-        });
-
         window.addEventListener('DOMContentLoaded', () => {
+            initGoldDustCanvas();
             const hasSaved = loadSavedProgress();
             updateRingsProgress();
             if (hasSaved) {
