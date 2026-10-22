@@ -6,7 +6,7 @@
     <title>2025-2026 專屬回憶錄｜Happy Birthday Christine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
-    <script src="https://jsdelivr.com/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -161,6 +161,16 @@
         .sensor-ripple {
             animation: ripple 1.5s infinite ease-out;
         }
+        .matrix-cell {
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .matrix-cell.active {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.28), rgba(250, 17, 79, 0.22));
+            border-color: #FFD700;
+            color: #FFFFFF;
+            box-shadow: 0 0 16px rgba(255, 215, 0, 0.45);
+            transform: scale(1.03);
+        }
     </style>
 </head>
 <body class="min-h-screen pb-28 selection:bg-[#FA114F] selection:text-white relative">
@@ -259,6 +269,13 @@
                 </div>
             </div>
 
+            <!-- 心動愛心回憶小統計 Recap -->
+            <div id="liked-recap-box" class="mb-6 p-4 rounded-2xl bg-zinc-900/85 border border-[#FA114F]/30 text-center">
+                <div class="text-xs font-bold text-[#FA114F] mb-1">💖 心動時刻統計</div>
+                <p id="liked-recap-text" class="text-xs text-zinc-300 leading-relaxed"></p>
+                <div id="liked-recap-thumbs" class="flex items-center justify-center gap-2 overflow-x-auto py-2 mt-2 hidden"></div>
+            </div>
+
             <div class="space-y-4 text-sm text-zinc-200 leading-relaxed mb-8 bg-zinc-900/70 p-5 rounded-2xl border border-white/10">
                 <p>
                     謝謝妳，在過去這一年裡，<br>
@@ -274,9 +291,9 @@
             <!-- 許願吹熄生日蠟燭儀式 -->
             <div id="candle-wish-box" class="py-6 px-4 rounded-2xl bg-gradient-to-b from-zinc-900/90 to-black border border-[#FFD700]/30 mb-4">
                 <div class="text-xs font-bold text-[#FFD700] tracking-wider uppercase mb-2">🕯️ BIRTHDAY WISH RITUAL</div>
-                <p id="candle-instruction" class="text-sm text-zinc-200 font-medium mb-6">
+                <p id="candle-instruction" class="text-sm text-zinc-200 font-medium mb-5">
                     在開啟最終驚喜前，請先在心裡默念今年的生日願望，<br>
-                    許好願後，<span class="text-[#FFD700] font-bold underline">點擊下方的燭火</span>吹熄蠟燭 ✨
+                    許好願後，<span class="text-[#FFD700] font-bold underline">點擊下方的燭火</span>（或開啟麥克風吹氣）吹熄蠟燭 ✨
                 </p>
 
                 <div class="relative w-32 h-40 mx-auto flex flex-col items-center justify-end cursor-pointer select-none group" onclick="blowOutCandle()">
@@ -295,7 +312,12 @@
                     <div class="w-32 h-2 bg-zinc-700 rounded-full"></div>
                 </div>
 
-                <p class="text-[11px] text-zinc-400 mt-4">（點擊燭火即可吹熄蠟燭）</p>
+                <div class="mt-4 flex flex-col items-center gap-2">
+                    <button id="mic-blow-btn" type="button" onclick="enableMicBlow()" class="px-3.5 py-1.5 rounded-full bg-zinc-800/90 hover:bg-zinc-700 border border-[#FFD700]/40 text-[11px] text-[#FFD700] font-bold transition cursor-pointer">
+                        🎙️ 點我開啟「對手機吹氣」熄滅蠟燭
+                    </button>
+                    <p id="mic-status-text" class="text-[11px] text-zinc-400">（直接點擊燭火也可以吹熄蠟燭喔！）</p>
+                </div>
             </div>
 
             <!-- 長按禮物盒 -->
@@ -371,28 +393,34 @@
          ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
         <div class="w-full max-w-lg flex items-center justify-between mb-3 px-1">
             <span id="lightbox-counter" class="text-xs font-mono text-zinc-400">Photo #p1</span>
-            <button type="button" onclick="closeLightbox()" class="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold hover:bg-white/20 cursor-pointer">
-                ✕ 關閉
-            </button>
+            <div class="flex items-center gap-2">
+                <button id="lightbox-like-btn" type="button" onclick="toggleLightboxLike(event)" class="px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white text-xs font-bold hover:bg-white/20 transition cursor-pointer flex items-center gap-1">
+                    <span id="lightbox-like-icon">🤍</span>
+                    <span>收藏</span>
+                </button>
+                <button type="button" onclick="closeLightbox()" class="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold hover:bg-white/20 cursor-pointer">
+                    ✕ 關閉
+                </button>
+            </div>
         </div>
 
-        <div class="relative w-full max-w-lg flex items-center justify-center">
+        <div id="lightbox-img-wrapper" class="relative w-full max-w-lg flex items-center justify-center" onclick="handleLightboxDoubleTap(event)">
             <button type="button" onclick="changeLightboxPhoto(-1, event)" class="absolute left-2 z-20 w-10 h-10 rounded-full bg-black/60 border border-white/15 text-white flex items-center justify-center text-lg hover:bg-black/80 active:scale-90 transition cursor-pointer">
                 ‹
             </button>
-            <img id="lightbox-img" src="" alt="放大回憶照片" class="max-h-[68vh] w-auto max-w-full rounded-2xl shadow-2xl border border-white/15 object-contain">
+            <img id="lightbox-img" src="" alt="放大回憶照片" class="max-h-[68vh] w-auto max-w-full rounded-2xl shadow-2xl border border-white/15 object-contain cursor-pointer">
             <button type="button" onclick="changeLightboxPhoto(1, event)" class="absolute right-2 z-20 w-10 h-10 rounded-full bg-black/60 border border-white/15 text-white flex items-center justify-center text-lg hover:bg-black/80 active:scale-90 transition cursor-pointer">
                 ›
             </button>
         </div>
 
         <p id="lightbox-caption" class="mt-4 text-center text-sm text-zinc-200 max-w-md px-4 leading-relaxed"></p>
-        <p class="mt-2 text-[11px] text-zinc-500">（僅可左右滑動瀏覽目前已解鎖章節的照片）</p>
+        <p class="mt-2 text-[11px] text-zinc-500">（可左右滑動切換 • 連點兩下照片可點亮愛心 💖）</p>
     </div>
 
     <script>
         const PHOTO_BASE_URL = "https://andyhhsu.github.io/for2026birthday/";
-        const STORAGE_KEY = "christine_2026_rings_state_v11";
+        const STORAGE_KEY = "christine_2026_rings_state_v12";
 
         const chaptersData = [
             {
@@ -404,12 +432,13 @@
                 ringColor: "#FA114F",
                 photoRange: [1, 29],
                 highlights: [6, 15, 20],
+                passDisplay: "OY63",
                 quiz: {
                     question: "【第一道鎖：特務登機證航班代號】\n準備好飛往下一個章節了嗎？這張通關登機證的航班代號由「2 個英文字母 ＋ 2 個數字」組成（共 4 碼）：\n\n1. 前 2 碼（英文）：在韓國行中，那間讓我們「無止盡的 O…」狂逛的知名美妝店，請取它「英文店名兩個單字的字首縮寫」（2 個英文字母）。\n2. 後 2 碼（數字）：瞬間回到東京時，那間讓我們覺得「好像可以再看」的表演店名裡，藏著哪 2 個數字？\n\n請輸入這組 4 碼航班代號解鎖：",
                     placeholder: "請輸入 2碼英文 + 2碼數字（共4碼）...",
                     type: "exact",
                     acceptedAnswers: ["oy63", "oliveyoung63", "olive young 63", "63oy"],
-                    hint: "【航線驗證提示】：\n1. 前 2 碼請回想首爾聖水洞那條街上讓妳逛到走不動、名字裡充滿「O」的美妝天堂英文全名，取前面兩個單字的開頭字母。\n2. 後 2 碼請翻閱東京那天的記憶，表演店名裡藏著的 2 位數。"
+                    hint: "【航線驗證提示】：\n1. 前 2 碼請回想首爾聖水洞那條街上讓妳逛到走不動、名字裡充滿「O」的美妝天堂英文全名，取前面兩個單字的開頭字母。\n2. 後 2 碼請翻閱東京那天的照片註解，表演店名裡藏著的 2 位數。"
                 },
                 notes: {
                     1: "全世界最可怕的雲霄飛車...挑戰成功(O)!",
@@ -452,21 +481,52 @@
                 ringColor: "#FFD700",
                 photoRange: [30, 39],
                 highlights: [36, 38, 39],
+                passDisplay: "C",
                 quiz: {
-                    question: "【第二道鎖：九宮格密室軌跡】\n下方是我們挑戰過的 9 座密室主題陣列。請根據本章照片下的回憶紀錄，從起點開始，用手指在九宮格上依序將這 7 座密室連起來：",
+                    question: "【第二道鎖：九宮格密室軌跡】\n下方是我們挑戰過的 9 座密室主題陣列。請根據本章照片下的回憶紀錄，從起點開始，直接用手指點擊下方九宮格，依序將這 7 座密室點亮連起來：",
                     customHTML: `
                         <div class="my-3 p-3.5 rounded-2xl bg-zinc-950/90 border border-[#FFD700]/30 shadow-inner">
-                            <div class="text-[10px] font-mono text-[#FFD700] text-center mb-2 tracking-widest uppercase">❖ 3×3 ESCAPE ROOM MATRIX ❖</div>
-                            <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold text-zinc-100 mb-3">
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">送煞</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">醫怨</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">誕生</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">囚聲</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">詐屍</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">還願</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">春日齒科</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">椅子姑</div>
-                                <div class="py-2.5 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow">魅妄廟</div>
+                            <div class="flex items-center justify-between mb-2 px-1">
+                                <span class="text-[10px] font-mono text-[#FFD700] tracking-widest uppercase">❖ 點擊格子標記路線順序 ❖</span>
+                                <button type="button" onclick="clearMatrixSelection()" class="text-[11px] text-zinc-400 hover:text-white underline cursor-pointer">🔄 清除重畫</button>
+                            </div>
+                            <div id="escape-matrix-grid" class="grid grid-cols-3 gap-2 text-center text-xs font-bold text-zinc-100 mb-3">
+                                <button type="button" onclick="toggleMatrixCell(this, '送煞')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>送煞</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '醫怨')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>醫怨</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '誕生')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>誕生</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '囚聲')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>囚聲</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '詐屍')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>詐屍</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '還願')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>還願</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '春日齒科')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>春日齒科</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '椅子姑')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>椅子姑</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
+                                <button type="button" onclick="toggleMatrixCell(this, '魅妄廟')" class="matrix-cell relative py-3 px-1 rounded-xl bg-zinc-900 border border-white/10 shadow cursor-pointer select-none">
+                                    <span>魅妄廟</span>
+                                    <span class="matrix-badge hidden absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#FFD700] text-black text-[10px] font-black flex items-center justify-center shadow"></span>
+                                </button>
                             </div>
                             <ol class="text-xs text-zinc-300 space-y-1.5 text-left pl-1 leading-relaxed border-t border-white/10 pt-2.5">
                                 <li><span class="text-[#FFD700] font-mono font-bold">Step 1 (起點)：</span>「台中密室第一站!」</li>
@@ -485,7 +545,7 @@
                     placeholder: "請輸入畫出來的 1 個英文字母...",
                     type: "exact",
                     acceptedAnswers: ["c", "christine"],
-                    hint: "【軌跡連線提示】：請對照九宮格上的 9 座密室名稱與照片註解！從「台中密室第一站 (誕生)」出發，依序連到「目前機關第一名的密室 (魅妄廟)」。把這 7 個點在九宮格上用直線連起來，看看它轉折後像哪一個英文大寫字母？"
+                    hint: "【軌跡連線提示】：請先看上方照片的註解，找出 Step 1 到 Step 7 分別對應哪一座密室名稱，接著直接用手指點擊上方九宮格把這 7 格按順序點亮，看看發亮的軌跡組成哪一個英文大寫字母？"
                 },
                 notes: {
                     30: "醫怨-劇情已忘哈哈 只記得懶懶NPC很厲害",
@@ -509,12 +569,13 @@
                 ringColor: "#00F5EA",
                 photoRange: [40, 65],
                 highlights: [45, 49, 59],
+                passDisplay: "1110",
                 quiz: {
-                    question: "【最終魔王題：時光保險箱】\n恭喜妳來到最後一關！這座保險箱需要輸入一組 4 位數終極密碼。\n請找出以下兩個關鍵日子的照片編號：\n• X = 某張照片的註解裡被我故意打錯字（諧音錯別字）的那張照片編號\n• Y = 我們「七週年紀念日」的那張照片編號\n\n最後請解開這道專屬方程式，輸入 4 位數終極密碼：\n(X × 18) - Y + 7 = ?",
+                    question: "【最終魔王題：時光保險箱】\n恭喜妳來到最後一關！這座保險箱需要輸入一組 4 位數終極密碼。\n請找出以下兩個關鍵日子的照片編號：\n• X = 某張照片的註解裡被我故意打錯字的那張照片編號\n• Y = 我們「七週年紀念日」的那張照片編號\n\n最後請解開這道專屬方程式，輸入 4 位數終極密碼：\n(X × 18) - Y + 7 = ?",
                     placeholder: "請輸入計算後的 4 位數密碼...",
                     type: "exact",
                     acceptedAnswers: ["1110"],
-                    hint: "【保險箱密碼提示】：\n1. 尋找 X：這 65 張照片裡，有一張照片的註解被我故意打錯字了（同音錯別字），找出那張照片的編號（X=64）。\n2. 尋找 Y：找出我們慶祝「七週年紀念日」的那張照片編號（Y=49）。\n3. 代入公式計算：(64 × 18) - 49 + 7 就是妳的生日數字！"
+                    hint: "【保險箱密碼提示】：\n1. 尋找 X：仔細巡視第三章（#p40 ~ #p65）的照片註解，有一張照片裡我把原本常叫妳的詞故意打成了字形超像的錯別字，請記下它的 #p 編號！\n2. 尋找 Y：找出寫著「七週年紀念日」的那張照片 #p 編號。\n3. 將兩個編號代入 (X × 18) - Y + 7 即可解開保險箱！"
                 },
                 notes: {
                     40: "去年的生日餐! 覺得前幾名好吃的牛排店",
@@ -526,7 +587,7 @@
                     46: "居家日常",
                     47: "後半段變搞笑片的克寧奶粉",
                     48: "你最愛的柯南❤️",
-                    49: "七週年紀念日❤️我們已經再一起這摸久啦!",
+                    49: "七週年紀念日❤️我們已經在一起這麼久啦!",
                     50: "每出必看的玩總~",
                     51: "來麗禧泡湯度假啦!",
                     52: "晚餐意外解鎖一間米其林",
@@ -546,6 +607,47 @@
                 }
             }
         ];
+
+        let matrixSelectedCells = [];
+
+        function toggleMatrixCell(btnEl, name) {
+            playSound('step');
+            const idx = matrixSelectedCells.indexOf(btnEl);
+            if (idx !== -1) {
+                matrixSelectedCells.splice(idx, 1);
+                btnEl.classList.remove('active');
+            } else {
+                matrixSelectedCells.push(btnEl);
+                btnEl.classList.add('active');
+            }
+            updateMatrixBadges();
+        }
+
+        function updateMatrixBadges() {
+            const allBtns = document.querySelectorAll('#escape-matrix-grid .matrix-cell');
+            allBtns.forEach(btn => {
+                const badge = btn.querySelector('.matrix-badge');
+                if (!badge) return;
+                const pos = matrixSelectedCells.indexOf(btn);
+                if (pos !== -1) {
+                    badge.textContent = pos + 1;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+        }
+
+        function clearMatrixSelection() {
+            playSound('step');
+            matrixSelectedCells = [];
+            const allBtns = document.querySelectorAll('#escape-matrix-grid .matrix-cell');
+            allBtns.forEach(btn => {
+                btn.classList.remove('active');
+                const badge = btn.querySelector('.matrix-badge');
+                if (badge) badge.classList.add('hidden');
+            });
+        }
 
         let synth, bgmSynth, bgmLoop;
         let isBgmPlaying = false;
@@ -843,6 +945,11 @@
                 btn.classList.toggle('scale-110', isLiked);
             });
 
+            const lbIcon = document.getElementById('lightbox-like-icon');
+            if (lbIcon && currentLightboxNum === num) {
+                lbIcon.textContent = likedPhotos.has(num) ? '❤️' : '🤍';
+            }
+
             if (containerEl) {
                 const heart = document.createElement('div');
                 heart.className = 'pop-heart';
@@ -887,6 +994,7 @@
         function loadChapter(index) {
             if (!isChapterAccessible(index)) return;
             currentChapterIndex = index;
+            matrixSelectedCells = [];
             saveProgress();
             const ch = chaptersData[index];
             const isAlreadyUnlocked = unlockedChapters.has(index);
@@ -963,9 +1071,9 @@
             }
 
             const isLastChapter = index === chaptersData.length - 1;
-            const nextBtnText = isLastChapter 
-                ? "✨ 驗證答案，完成 100% 記憶拼圖！" 
-                : `🔓 驗證答案，解鎖 Chapter ${index + 2} ➔`;
+            const nextBtnText = isAlreadyUnlocked
+                ? (isLastChapter ? "✨ 前往 100% 最終驚喜 ➔" : `✨ 前往下一章 (Chapter ${index + 2}) ➔`)
+                : (isLastChapter ? "✨ 驗證答案，完成 100% 記憶拼圖！" : `🔓 驗證答案，解鎖 Chapter ${index + 2} ➔`);
 
             const container = document.getElementById('chapter-container');
             container.innerHTML = `
@@ -1010,9 +1118,10 @@
                     ${ch.quiz.customHTML || ''}
                     <div>
                         <input id="quiz-input" type="text" placeholder="${ch.quiz.placeholder}" 
-                               value="${isAlreadyUnlocked ? '✅ 已成功解鎖本章' : ''}"
+                               value="${isAlreadyUnlocked ? `✅ 已成功解鎖本章（通行密碼：${ch.passDisplay}）` : ''}"
+                               ${isAlreadyUnlocked ? 'readonly' : ''}
                                onkeydown="if(event.key==='Enter') verifyChapterQuiz(${index})"
-                               class="w-full px-4 py-3.5 rounded-2xl bg-zinc-900/90 border border-white/15 text-white text-sm focus:outline-none focus:border-white transition">
+                               class="w-full px-4 py-3.5 rounded-2xl bg-zinc-900/90 border ${isAlreadyUnlocked ? 'border-emerald-400/60 text-emerald-300 font-bold' : 'border-white/15 text-white'} text-sm focus:outline-none focus:border-white transition">
                         <p id="quiz-feedback" class="text-xs mt-2 hidden"></p>
                     </div>
                     <button type="button" onclick="verifyChapterQuiz(${index})" class="w-full py-4 rounded-2xl bg-white text-black font-black text-base shadow-xl hover:bg-zinc-200 active:scale-95 transition transform cursor-pointer">
@@ -1037,79 +1146,99 @@
 
         function verifyChapterQuiz(index) {
             if (unlockedChapters.has(index)) {
-                proceedNext(index);
+                playSound('step');
+                if (index + 1 < chaptersData.length) {
+                    loadChapter(index + 1);
+                } else {
+                    showFinale();
+                }
                 return;
             }
 
-            const ch = chaptersData[index];
             const inputEl = document.getElementById('quiz-input');
             const feedbackEl = document.getElementById('quiz-feedback');
-            const rawVal = (inputEl.value || "").trim();
-            const normalizedVal = rawVal.replace(/\s+/g, "").replace(/臺/g, "台").toLowerCase();
+            const rawVal = (inputEl.value || '').trim().toLowerCase();
+            const cleanVal = rawVal.replace(/\s+/g, '');
+            const quiz = chaptersData[index].quiz;
 
             let isCorrect = false;
-            if (ch.quiz.type === "exact") {
-                isCorrect = ch.quiz.acceptedAnswers.some(ans => normalizedVal === ans.replace(/\s+/g, "").toLowerCase());
-            } else {
-                isCorrect = ch.quiz.acceptedAnswers.some(ans => normalizedVal.includes(ans.toLowerCase()));
+            if (quiz.type === 'exact') {
+                isCorrect = quiz.acceptedAnswers.some(ans => {
+                    const cleanAns = ans.toLowerCase().replace(/\s+/g, '');
+                    return cleanVal === cleanAns || rawVal === ans.toLowerCase();
+                });
             }
 
-            if (isCorrect) {
-                feedbackEl.textContent = "🎉 破解成功！下一章節的記憶大門已開啟！";
-                feedbackEl.className = "text-xs mt-2 text-emerald-400 font-bold block";
-                inputEl.classList.remove("border-rose-500");
-                inputEl.classList.add("border-emerald-400");
-                setTimeout(() => {
-                    proceedNext(index);
-                }, 400);
-            } else {
+            if (!isCorrect) {
                 playSound('error');
-                const quizCard = document.getElementById('quiz-card');
-                quizCard.classList.remove('animate-shake');
-                void quizCard.offsetWidth;
-                quizCard.classList.add('animate-shake');
-
-                feedbackEl.textContent = `❌ 答案不正確喔！\n💡 ${ch.quiz.hint}`;
-                feedbackEl.className = "text-xs mt-2 text-rose-400 font-medium whitespace-pre-line block";
-                inputEl.classList.add("border-rose-500");
+                inputEl.classList.remove('animate-shake');
+                void inputEl.offsetWidth;
+                inputEl.classList.add('animate-shake');
+                inputEl.classList.add('border-[#FA114F]');
+                feedbackEl.innerHTML = `<span class="font-bold text-[#FA114F]">❌ 驗證失敗！</span><br>${quiz.hint.replace(/\n/g, '<br>')}`;
+                feedbackEl.className = "text-xs mt-2.5 p-3.5 rounded-xl bg-[#FA114F]/15 border border-[#FA114F]/40 text-zinc-100 leading-relaxed block";
+                return;
             }
-        }
 
-        function proceedNext(index) {
             unlockedChapters.add(index);
-            saveProgress();
             updateRingsProgress();
-            renderTabs();
-
-            const modal = document.getElementById('chapter-transition-modal');
-            const iconEl = document.getElementById('trans-icon');
-            const subEl = document.getElementById('trans-sub');
-            const titleEl = document.getElementById('trans-title');
-            const descEl = document.getElementById('trans-desc');
+            saveProgress();
 
             if (unlockedChapters.size === chaptersData.length) {
                 playSound('complete');
-                iconEl.textContent = "🎉";
-                subEl.textContent = "ALL CHAPTERS COMPLETED • 100%";
-                titleEl.textContent = "65 張記憶拼圖完美合攏！";
-                descEl.textContent = "正在為妳點亮生日許願燭火...";
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    showFinale();
-                }, 1500);
+                playChapterTransition(
+                    "🎉",
+                    "ALL CHAPTERS COMPLETED",
+                    "100% 記憶畫冊完美合攏",
+                    "正在為妳點亮生日許願燭火...",
+                    () => showFinale()
+                );
             } else {
                 playSound('step');
                 const nextCh = chaptersData[index + 1];
-                iconEl.textContent = nextCh.icon;
-                subEl.textContent = `CHAPTER 0${index + 2} UNLOCKED`;
-                titleEl.textContent = `${chaptersData[index].shortTitle} 記憶已珍藏`;
-                descEl.textContent = `正在翻開下一章：${nextCh.title}...`;
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    loadChapter(index + 1);
-                }, 1400);
+                playChapterTransition(
+                    nextCh.icon,
+                    `CHAPTER 0${index + 1} UNLOCKED`,
+                    `Chapter 0${index + 1} 記憶已封存`,
+                    `正在開啟 ${nextCh.title}...`,
+                    () => loadChapter(index + 1)
+                );
+            }
+        }
+
+        function playChapterTransition(icon, sub, title, desc, callback) {
+            const modal = document.getElementById('chapter-transition-modal');
+            document.getElementById('trans-icon').textContent = icon;
+            document.getElementById('trans-sub').textContent = sub;
+            document.getElementById('trans-title').textContent = title;
+            document.getElementById('trans-desc').textContent = desc;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                if (callback) callback();
+            }, 1450);
+        }
+
+        function renderLikedRecap() {
+            const textEl = document.getElementById('liked-recap-text');
+            const thumbsEl = document.getElementById('liked-recap-thumbs');
+            if (!textEl || !thumbsEl) return;
+
+            const count = likedPhotos.size;
+            if (count > 0) {
+                textEl.innerHTML = `在翻閱這 65 個瞬間時，妳一共點亮了 <span class="text-[#FFD700] font-bold text-sm">${count}</span> 顆心動愛心！<br><span class="text-[11px] text-zinc-400">（點擊下方縮圖可再次回味妳最愛的瞬間）</span>`;
+                const sortedNums = Array.from(likedPhotos).sort((a, b) => a - b);
+                thumbsEl.innerHTML = sortedNums.map(num => `
+                    <div onclick="openLightboxByNum(${num})" class="flex-shrink-0 w-12 h-12 rounded-xl overflow-hidden border border-[#FFD700]/40 bg-zinc-800 relative cursor-pointer">
+                        <img src="${getPhotoUrl(num, 0)}" alt="#p${num}" class="w-full h-full object-cover" onerror="handleImgError(this, ${num})">
+                        <span class="absolute bottom-0 right-0 bg-black/75 text-[9px] font-mono px-1 text-[#FFD700]">#${num}</span>
+                    </div>
+                `).join('');
+                thumbsEl.classList.remove('hidden');
+            } else {
+                textEl.innerHTML = `這 65 個閃閃發光的瞬間，都是我們最珍貴的寶藏 ✨<br><span class="text-[11px] text-zinc-400">（隨時可以點上方章節回去幫喜歡的照片按愛心喔！）</span>`;
+                thumbsEl.classList.add('hidden');
             }
         }
 
@@ -1118,6 +1247,7 @@
             document.getElementById('floating-nav').classList.add('hidden');
             document.getElementById('finale-section').classList.remove('hidden');
             renderTabs();
+            renderLikedRecap();
 
             if (isGiftRevealed) {
                 document.getElementById('candle-wish-box').classList.add('hidden');
@@ -1130,11 +1260,65 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        let micStream = null;
+        let micAnimFrame = null;
+
+        async function enableMicBlow() {
+            const statusText = document.getElementById('mic-status-text');
+            const btn = document.getElementById('mic-blow-btn');
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                if (statusText) statusText.textContent = "💡 您的瀏覽器不支援麥克風偵測，請直接點擊燭火吹熄喔！";
+                return;
+            }
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createMediaStreamSource(micStream);
+                const analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                if (btn) btn.textContent = "🌬️ 麥克風已開啟！請對著手機吹一口氣～";
+                if (statusText) statusText.textContent = "（正在感應妳的吹氣音量...）";
+
+                function checkBlow() {
+                    if (isCandleBlown) return;
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for (let i = 0; i < 25; i++) {
+                        sum += dataArray[i];
+                    }
+                    const avgLowFreq = sum / 25;
+                    if (avgLowFreq > 95) {
+                        blowOutCandle();
+                        return;
+                    }
+                    micAnimFrame = requestAnimationFrame(checkBlow);
+                }
+                checkBlow();
+            } catch (err) {
+                if (statusText) statusText.textContent = "💡 未授權麥克風，請直接用手指點擊上方燭火吹熄蠟燭喔！";
+            }
+        }
+
+        function stopMicStream() {
+            if (micAnimFrame) cancelAnimationFrame(micAnimFrame);
+            if (micStream) {
+                micStream.getTracks().forEach(track => track.stop());
+                micStream = null;
+            }
+        }
+
         function blowOutCandle() {
             if (isCandleBlown) return;
             isCandleBlown = true;
+            stopMicStream();
             saveProgress();
             playSound('wish');
+            try {
+                if (navigator.vibrate) navigator.vibrate([60, 40, 100]);
+            } catch (e) {}
 
             const flameEl = document.getElementById('candle-flame-el');
             const smokeEl = document.getElementById('candle-smoke-el');
@@ -1266,6 +1450,7 @@
             const imgEl = document.getElementById('lightbox-img');
             const capEl = document.getElementById('lightbox-caption');
             const counterEl = document.getElementById('lightbox-counter');
+            const lbIcon = document.getElementById('lightbox-like-icon');
             const pageImg = document.getElementById(`masonry-img-${currentLightboxNum}`) || document.getElementById(`gallery-img-${currentLightboxNum}`);
             const maxPhoto = getMaxAccessiblePhotoNum();
 
@@ -1279,6 +1464,38 @@
             imgEl.src = pageImg ? pageImg.src : getPhotoUrl(currentLightboxNum, 0);
             capEl.textContent = `“${noteText}”`;
             counterEl.textContent = `Photo #p${currentLightboxNum} / 已解鎖上限 #p${maxPhoto}`;
+            if (lbIcon) {
+                lbIcon.textContent = likedPhotos.has(currentLightboxNum) ? '❤️' : '🤍';
+            }
+        }
+
+        function toggleLightboxLike(event) {
+            if (event) event.stopPropagation();
+            const wrapper = document.getElementById('lightbox-img-wrapper');
+            togglePhotoLike(currentLightboxNum, event, wrapper);
+        }
+
+        let lastLightboxTap = 0;
+        function handleLightboxDoubleTap(event) {
+            const now = Date.now();
+            if (now - lastLightboxTap < 280 && now - lastLightboxTap > 0) {
+                const wrapper = document.getElementById('lightbox-img-wrapper');
+                if (!likedPhotos.has(currentLightboxNum)) {
+                    togglePhotoLike(currentLightboxNum, event, wrapper);
+                } else {
+                    playSound('like');
+                    const heart = document.createElement('div');
+                    heart.className = 'pop-heart';
+                    heart.innerHTML = '💖';
+                    heart.style.left = '50%';
+                    heart.style.top = '50%';
+                    wrapper.appendChild(heart);
+                    setTimeout(() => heart.remove(), 850);
+                }
+                lastLightboxTap = 0;
+            } else {
+                lastLightboxTap = now;
+            }
         }
 
         function closeLightbox() {
